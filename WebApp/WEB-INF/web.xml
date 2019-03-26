@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<display-name>Archetype Created Web Application</display-name>
+
+	<!-- Spring和mybatis的配置文件 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring-mybatis.xml</param-value>
+	</context-param>
+
+	<!-- 编码过滤器 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<async-supported>true</async-supported>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Spring监听器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- 防止Spring内存溢出监听器 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+
+	<!-- Spring MVC servlet -->
+	<servlet>
+		<servlet-name>SpringMVC</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<!-- 此处可以可以配置成*.do，对应struts的后缀习惯 -->
+		<!-- 第一种： *.action，所有以*.action结尾的访问，都由DispatcherServlet解析 -->
+		<!--第二种：/ ，所有访问的地址都由DispatcherServlet解析，对于这种配置会出现一个问题，那就是静态文件的访问不需要， DispatcherServlet进行解析（因为访问静态文件直接返回即可，不用再由处理器处理）。 
+			但是这种方式可以实现RESTful风格的url -->
+		<!-- 第三种：/* ，这种配置不对，使用这种配置，最终要转发到一个jsp页面时， 仍然会由DispatcherServlet解析jsp的地址，不能根据jsp的页面找到Handler，会报错 -->
+		<!-- 注意：要实现RESTful风格的url则需要配置：<url-pattern>/</url-pattern>。同时需要解决静态资源直接返回，不需要解析的问题，需要在springmvc.xml中添加资源映射： -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!-- 配置HiddenHttpMethodFilter：将POST请求转换为DELETE或PUT请求 -->
+	<filter>
+		<filter-name>hiddenHttpMethodFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>hiddenHttpMethodFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<welcome-file-list>
+		<welcome-file>/index.jsp</welcome-file>
+	</welcome-file-list>
+
+</web-app>

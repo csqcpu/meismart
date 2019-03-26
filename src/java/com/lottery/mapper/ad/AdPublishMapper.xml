@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.ad.AdPublishMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdPublish">
+    <id column="publish_id" jdbcType="INTEGER" property="publish_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="location_id" jdbcType="VARCHAR" property="location_id" />
+    <result column="startdt" jdbcType="TIMESTAMP" property="startdt" />
+    <result column="enddt" jdbcType="TIMESTAMP" property="enddt" />
+    <result column="fee_id" jdbcType="INTEGER" property="fee_id" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="createuser" jdbcType="CHAR" property="createuser" />
+    <result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
+    <result column="checkuser" jdbcType="CHAR" property="checkuser" />
+    <result column="checkdt" jdbcType="TIMESTAMP" property="checkdt" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    publish_id, name, location_id, startdt, enddt, fee_id, price, createuser, createdt, 
+    checkuser, checkdt, status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from adpublish
+    where publish_id = #{publish_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from adpublish
+    where publish_id = #{publish_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.model.ad.AdPublish">
+    insert into adpublish (publish_id, name, location_id, 
+      startdt, enddt, fee_id, 
+      price, createuser, createdt, 
+      checkuser, checkdt, status
+      )
+    values (#{publish_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{location_id,jdbcType=VARCHAR}, 
+      #{startdt,jdbcType=TIMESTAMP}, #{enddt,jdbcType=TIMESTAMP}, #{fee_id,jdbcType=INTEGER}, 
+      #{price,jdbcType=DOUBLE}, #{createuser,jdbcType=CHAR}, #{createdt,jdbcType=TIMESTAMP}, 
+      #{checkuser,jdbcType=CHAR}, #{checkdt,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.ad.AdPublish">
+    insert into adpublish
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="publish_id != null">
+        publish_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="location_id != null">
+        location_id,
+      </if>
+      <if test="startdt != null">
+        startdt,
+      </if>
+      <if test="enddt != null">
+        enddt,
+      </if>
+      <if test="fee_id != null">
+        fee_id,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="createuser != null">
+        createuser,
+      </if>
+      <if test="createdt != null">
+        createdt,
+      </if>
+      <if test="checkuser != null">
+        checkuser,
+      </if>
+      <if test="checkdt != null">
+        checkdt,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="publish_id != null">
+        #{publish_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="location_id != null">
+        #{location_id,jdbcType=VARCHAR},
+      </if>
+      <if test="startdt != null">
+        #{startdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddt != null">
+        #{enddt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fee_id != null">
+        #{fee_id,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="createuser != null">
+        #{createuser,jdbcType=CHAR},
+      </if>
+      <if test="createdt != null">
+        #{createdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkuser != null">
+        #{checkuser,jdbcType=CHAR},
+      </if>
+      <if test="checkdt != null">
+        #{checkdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdPublish">
+    update adpublish
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="location_id != null">
+        location_id = #{location_id,jdbcType=VARCHAR},
+      </if>
+      <if test="startdt != null">
+        startdt = #{startdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddt != null">
+        enddt = #{enddt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fee_id != null">
+        fee_id = #{fee_id,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="createuser != null">
+        createuser = #{createuser,jdbcType=CHAR},
+      </if>
+      <if test="createdt != null">
+        createdt = #{createdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkuser != null">
+        checkuser = #{checkuser,jdbcType=CHAR},
+      </if>
+      <if test="checkdt != null">
+        checkdt = #{checkdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where publish_id = #{publish_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdPublish">
+    update adpublish
+    set name = #{name,jdbcType=VARCHAR},
+      location_id = #{location_id,jdbcType=VARCHAR},
+      startdt = #{startdt,jdbcType=TIMESTAMP},
+      enddt = #{enddt,jdbcType=TIMESTAMP},
+      fee_id = #{fee_id,jdbcType=INTEGER},
+      price = #{price,jdbcType=DOUBLE},
+      createuser = #{createuser,jdbcType=CHAR},
+      createdt = #{createdt,jdbcType=TIMESTAMP},
+      checkuser = #{checkuser,jdbcType=CHAR},
+      checkdt = #{checkdt,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
+    where publish_id = #{publish_id,jdbcType=INTEGER}
+  </update>
+</mapper>
