@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.lottery.model.ad.AdOnline;
 import com.lottery.model.ad.AdPlayHis;
+import com.lottery.redis.MybatisRedisCache;
 import com.lottery.service.ad.AdFeeService;
 import com.lottery.service.ad.AdOnlineService;
 import com.lottery.service.ad.AdPlayHisService;
@@ -32,61 +33,62 @@ public class AdCotroller implements ApplicationContextAware {
 	private AdOnlineService adOnlineService;
 	@Autowired
 	private AdPlayHisService adPlayHisService;
+	@Autowired
+	MybatisRedisCache mybatisRedisCache;
 	ApplicationContext applicationContext;
 
 
 
 	@ResponseBody
-	@RequestMapping(value = "/ad/getad")
+	@RequestMapping(value = "/rest/ad/getvideoad")
 	public void GetAd(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
-		Integer adId = requestJson.getInteger("adid");
-		// Integer adId = Integer.valueOf(request.getParameter("id"));
-		AdOnline adOnline = adOnlineService.findByOnlineId(adId);
+		Integer locationid = requestJson.getInteger("locationid");
+		AdOnline adOnline = adOnlineService.findByOnlineId(locationid);
 		if (adOnline == null) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", -1);
-			jsonObject.put("adid", adId);
-			jsonObject.put("msg", "无该id广告");
+			jsonObject.put("msg", "locationid="+locationid+" not found");
 			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 			response.setContentType("text/json; charset=UTF-8");
 			return;
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("code", 200);
-		jsonObject.put("adid", adId);
-		jsonObject.put("link", adOnline.getUrl());
+		jsonObject.put("onlineid", adOnline.getOnline_id());
+		jsonObject.put("url", adOnline.getUrl());
 		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 		response.setContentType("text/json; charset=UTF-8");
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/ad/addadhis")
+	@RequestMapping(value = "/rest/ad/adhis")
 	public void AddAdHis(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
-		Integer online_id = requestJson.getInteger("online_id");
+		Integer onlineid = requestJson.getInteger("onlineid");
 		//Timestamp tstartdt =requestJson.getTimestamp("startdt");
 		Date startdt =requestJson.getTimestamp("startdt");
 		Date enddt =requestJson.getTimestamp("enddt");
-		Integer time = requestJson.getInteger("time");
+		Integer duration = requestJson.getInteger("duration");
 		AdPlayHis adPlayHis= new AdPlayHis();
-		adPlayHis.setOnline_id(online_id);
+		adPlayHis.setOnline_id(onlineid);
 		adPlayHis.setStartdt(startdt);
 		adPlayHis.setEnddt(enddt);
-		adPlayHis.setPlaytime(time);
-		int insertnum= adPlayHisService.insert(adPlayHis);
+		adPlayHis.setDuration(duration);
+		//int insertnum= adPlayHisService.insert(adPlayHis);
+		final String ADPLAYHIS_MQ = "adplayhis_mq";
+		long insertnum=mybatisRedisCache.mqSend(ADPLAYHIS_MQ,adPlayHis);
+		
 		if (insertnum == 0) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", -1);
-			jsonObject.put("adid", online_id);
-			jsonObject.put("msg", "无该id广告");
+			jsonObject.put("msg", "onlineid="+onlineid+" not found");
 			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 			response.setContentType("text/json; charset=UTF-8");
 			return;
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("code", 200);
-		jsonObject.put("online_id", online_id);
 		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 		response.setContentType("text/json; charset=UTF-8");
 	}

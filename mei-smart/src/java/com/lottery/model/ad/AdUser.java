@@ -3,18 +3,18 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
-public class AdUser implements Serializable{
-    private Integer user_id;
-
+public class AdUser implements Serializable {
     private String username;
 
     private String password;
 
     private String smscode;
 
-    private Date createdt;
-
     private String corp;
+
+    private String addr;
+
+    private String postcode;
 
     private String contact;
 
@@ -22,17 +22,13 @@ public class AdUser implements Serializable{
 
     private String telephone;
 
-    private Double account;
+    private Integer account;
 
-    private Byte pay_id;
+    private Integer pay_id;
 
-    public Integer getUser_id() {
-        return user_id;
-    }
+    private Date createdt;
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
-    }
+    private String createuser;
 
     public String getUsername() {
         return username;
@@ -58,20 +54,28 @@ public class AdUser implements Serializable{
         this.smscode = smscode == null ? null : smscode.trim();
     }
 
-    public Date getCreatedt() {
-        return createdt;
-    }
-
-    public void setCreatedt(Date createdt) {
-        this.createdt = createdt;
-    }
-
     public String getCorp() {
         return corp;
     }
 
     public void setCorp(String corp) {
         this.corp = corp == null ? null : corp.trim();
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr == null ? null : addr.trim();
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode == null ? null : postcode.trim();
     }
 
     public String getContact() {
@@ -98,19 +102,35 @@ public class AdUser implements Serializable{
         this.telephone = telephone == null ? null : telephone.trim();
     }
 
-    public Double getAccount() {
+    public Integer getAccount() {
         return account;
     }
 
-    public void setAccount(Double account) {
+    public void setAccount(Integer account) {
         this.account = account;
     }
 
-    public Byte getPay_id() {
+    public Integer getPay_id() {
         return pay_id;
     }
 
-    public void setPay_id(Byte pay_id) {
+    public void setPay_id(Integer pay_id) {
         this.pay_id = pay_id;
+    }
+
+    public Date getCreatedt() {
+        return createdt;
+    }
+
+    public void setCreatedt(Date createdt) {
+        this.createdt = createdt;
+    }
+
+    public String getCreateuser() {
+        return createuser;
+    }
+
+    public void setCreateuser(String createuser) {
+        this.createuser = createuser == null ? null : createuser.trim();
     }
 }

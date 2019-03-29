@@ -2,7 +2,7 @@ package com.lottery.model.ad;
 
 import java.io.Serializable;
 
-public class AdLocation implements Serializable{
+public class AdLocation implements Serializable {
     private Integer location_id;
 
     private String name;

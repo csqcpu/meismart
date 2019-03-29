@@ -2,14 +2,14 @@ package com.lottery.model.ad;
 
 import java.io.Serializable;
 
-public class AdFee implements Serializable{
+public class AdFee implements Serializable {
     private Integer fee_id;
 
     private String name;
 
-    private Double price;
+    private Integer perofnum;
 
-    private String method;
+    private Integer price;
 
     public Integer getFee_id() {
         return fee_id;
@@ -27,19 +27,19 @@ public class AdFee implements Serializable{
         this.name = name == null ? null : name.trim();
     }
 
-    public Double getPrice() {
+    public Integer getPerofnum() {
+        return perofnum;
+    }
+
+    public void setPerofnum(Integer perofnum) {
+        this.perofnum = perofnum;
+    }
+
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method == null ? null : method.trim();
     }
 }

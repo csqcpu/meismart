@@ -3,12 +3,12 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
-public class AdPublish implements Serializable{
+public class AdPublish implements Serializable {
     private Integer publish_id;
 
-    private String name;
+    private String title;
 
-    private String location_id;
+    private Integer location_id;
 
     private Date startdt;
 
@@ -16,7 +16,7 @@ public class AdPublish implements Serializable{
 
     private Integer fee_id;
 
-    private Double price;
+    private Integer price;
 
     private String createuser;
 
@@ -36,20 +36,20 @@ public class AdPublish implements Serializable{
         this.publish_id = publish_id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
     }
 
-    public String getLocation_id() {
+    public Integer getLocation_id() {
         return location_id;
     }
 
-    public void setLocation_id(String location_id) {
-        this.location_id = location_id == null ? null : location_id.trim();
+    public void setLocation_id(Integer location_id) {
+        this.location_id = location_id;
     }
 
     public Date getStartdt() {
@@ -76,11 +76,11 @@ public class AdPublish implements Serializable{
         this.fee_id = fee_id;
     }
 
-    public Double getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

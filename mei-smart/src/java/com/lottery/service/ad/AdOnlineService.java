@@ -14,8 +14,10 @@ import com.lottery.model.ad.AdOnline;
 public class AdOnlineService{
 	@Autowired
 	AdOnlineMapper adOnlineMapper;
-	public AdOnline findByOnlineId(Integer user_id){
-		return adOnlineMapper.findByOnlineId(user_id);
+	public AdOnline findByOnlineId(Integer onlineId){
+		return adOnlineMapper.findByOnlineId(onlineId);
 	}
-
+	public AdOnline findByLocationId(Integer locationId){
+		return adOnlineMapper.findByLocationId(locationId);
+	}
 }

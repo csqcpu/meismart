@@ -3,16 +3,18 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
-public class AdOnline implements Serializable{
+public class AdOnline implements Serializable {
     private Integer online_id;
 
     private Integer public_id;
 
-    private String name;
+    private String title;
+
+    private String cont;
 
     private String url;
 
-    private String location_id;
+    private Integer location_id;
 
     private Date startdt;
 
@@ -21,6 +23,8 @@ public class AdOnline implements Serializable{
     private String username;
 
     private Integer fee_id;
+
+    private Byte status;
 
     public Integer getOnline_id() {
         return online_id;
@@ -38,12 +42,20 @@ public class AdOnline implements Serializable{
         this.public_id = public_id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
+    }
+
+    public String getCont() {
+        return cont;
+    }
+
+    public void setCont(String cont) {
+        this.cont = cont == null ? null : cont.trim();
     }
 
     public String getUrl() {
@@ -54,12 +66,12 @@ public class AdOnline implements Serializable{
         this.url = url == null ? null : url.trim();
     }
 
-    public String getLocation_id() {
+    public Integer getLocation_id() {
         return location_id;
     }
 
-    public void setLocation_id(String location_id) {
-        this.location_id = location_id == null ? null : location_id.trim();
+    public void setLocation_id(Integer location_id) {
+        this.location_id = location_id;
     }
 
     public Date getStartdt() {
@@ -92,5 +104,13 @@ public class AdOnline implements Serializable{
 
     public void setFee_id(Integer fee_id) {
         this.fee_id = fee_id;
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

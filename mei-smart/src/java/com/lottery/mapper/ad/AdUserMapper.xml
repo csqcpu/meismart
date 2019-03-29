@@ -2,52 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lottery.mapper.ad.AdUserMapper">
 	<resultMap id="BaseResultMap" type="com.lottery.model.ad.AdUser">
-		<id column="user_id" jdbcType="INTEGER" property="user_id" />
-		<result column="username" jdbcType="CHAR" property="username" />
-		<result column="password" jdbcType="CHAR" property="password" />
-		<result column="smscode" jdbcType="CHAR" property="smscode" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="smscode" jdbcType="VARCHAR" property="smscode" />
+		<result column="corp" jdbcType="VARCHAR" property="corp" />
+		<result column="addr" jdbcType="VARCHAR" property="addr" />
+		<result column="postcode" jdbcType="VARCHAR" property="postcode" />
+		<result column="contact" jdbcType="VARCHAR" property="contact" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+		<result column="account" jdbcType="INTEGER" property="account" />
+		<result column="pay_id" jdbcType="INTEGER" property="pay_id" />
 		<result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
-		<result column="corp" jdbcType="CHAR" property="corp" />
-		<result column="contact" jdbcType="CHAR" property="contact" />
-		<result column="mobile" jdbcType="CHAR" property="mobile" />
-		<result column="telephone" jdbcType="CHAR" property="telephone" />
-		<result column="account" jdbcType="DOUBLE" property="account" />
-		<result column="pay_id" jdbcType="TINYINT" property="pay_id" />
+		<result column="createuser" jdbcType="VARCHAR" property="createuser" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		user_id, username, password, smscode, createdt, corp, contact, mobile,
-		telephone,
-		account, pay_id
+		username, password, smscode, corp, addr, postcode, contact, mobile, telephone,
+		account,
+		pay_id, createdt, createuser
 	</sql>
-	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from aduser
-		where user_id = #{user_id,jdbcType=INTEGER}
+		where username = #{username,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 		delete from aduser
-		where user_id = #{user_id,jdbcType=INTEGER}
+		where username = #{username,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert" parameterType="com.lottery.model.ad.AdUser">
-		insert into aduser (user_id, username, password,
-		smscode, createdt, corp,
+		insert into aduser (username, password, smscode,
+		corp, addr, postcode,
 		contact, mobile, telephone,
-		account, pay_id)
-		values (#{user_id,jdbcType=INTEGER}, #{username,jdbcType=CHAR},
-		#{password,jdbcType=CHAR},
-		#{smscode,jdbcType=CHAR}, #{createdt,jdbcType=TIMESTAMP}, #{corp,jdbcType=CHAR},
-		#{contact,jdbcType=CHAR}, #{mobile,jdbcType=CHAR},
-		#{telephone,jdbcType=CHAR},
-		#{account,jdbcType=DOUBLE}, #{pay_id,jdbcType=TINYINT})
+		account, pay_id, createdt,
+		createuser)
+		values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		#{smscode,jdbcType=VARCHAR},
+		#{corp,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR},
+		#{contact,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+		#{telephone,jdbcType=VARCHAR},
+		#{account,jdbcType=INTEGER}, #{pay_id,jdbcType=INTEGER}, #{createdt,jdbcType=TIMESTAMP},
+		#{createuser,jdbcType=VARCHAR})
 	</insert>
 	<insert id="insertSelective" parameterType="com.lottery.model.ad.AdUser">
 		insert into aduser
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="user_id != null">
-				user_id,
-			</if>
 			<if test="username != null">
 				username,
 			</if>
@@ -57,11 +58,14 @@
 			<if test="smscode != null">
 				smscode,
 			</if>
-			<if test="createdt != null">
-				createdt,
-			</if>
 			<if test="corp != null">
 				corp,
+			</if>
+			<if test="addr != null">
+				addr,
+			</if>
+			<if test="postcode != null">
+				postcode,
 			</if>
 			<if test="contact != null">
 				contact,
@@ -78,101 +82,120 @@
 			<if test="pay_id != null">
 				pay_id,
 			</if>
+			<if test="createdt != null">
+				createdt,
+			</if>
+			<if test="createuser != null">
+				createuser,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="user_id != null">
-				#{user_id,jdbcType=INTEGER},
-			</if>
 			<if test="username != null">
-				#{username,jdbcType=CHAR},
+				#{username,jdbcType=VARCHAR},
 			</if>
 			<if test="password != null">
-				#{password,jdbcType=CHAR},
+				#{password,jdbcType=VARCHAR},
 			</if>
 			<if test="smscode != null">
-				#{smscode,jdbcType=CHAR},
+				#{smscode,jdbcType=VARCHAR},
+			</if>
+			<if test="corp != null">
+				#{corp,jdbcType=VARCHAR},
+			</if>
+			<if test="addr != null">
+				#{addr,jdbcType=VARCHAR},
+			</if>
+			<if test="postcode != null">
+				#{postcode,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				#{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="account != null">
+				#{account,jdbcType=INTEGER},
+			</if>
+			<if test="pay_id != null">
+				#{pay_id,jdbcType=INTEGER},
 			</if>
 			<if test="createdt != null">
 				#{createdt,jdbcType=TIMESTAMP},
 			</if>
-			<if test="corp != null">
-				#{corp,jdbcType=CHAR},
-			</if>
-			<if test="contact != null">
-				#{contact,jdbcType=CHAR},
-			</if>
-			<if test="mobile != null">
-				#{mobile,jdbcType=CHAR},
-			</if>
-			<if test="telephone != null">
-				#{telephone,jdbcType=CHAR},
-			</if>
-			<if test="account != null">
-				#{account,jdbcType=DOUBLE},
-			</if>
-			<if test="pay_id != null">
-				#{pay_id,jdbcType=TINYINT},
+			<if test="createuser != null">
+				#{createuser,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
 	<update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdUser">
 		update aduser
 		<set>
-			<if test="username != null">
-				username = #{username,jdbcType=CHAR},
-			</if>
 			<if test="password != null">
-				password = #{password,jdbcType=CHAR},
+				password = #{password,jdbcType=VARCHAR},
 			</if>
 			<if test="smscode != null">
-				smscode = #{smscode,jdbcType=CHAR},
+				smscode = #{smscode,jdbcType=VARCHAR},
+			</if>
+			<if test="corp != null">
+				corp = #{corp,jdbcType=VARCHAR},
+			</if>
+			<if test="addr != null">
+				addr = #{addr,jdbcType=VARCHAR},
+			</if>
+			<if test="postcode != null">
+				postcode = #{postcode,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				telephone = #{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="account != null">
+				account = #{account,jdbcType=INTEGER},
+			</if>
+			<if test="pay_id != null">
+				pay_id = #{pay_id,jdbcType=INTEGER},
 			</if>
 			<if test="createdt != null">
 				createdt = #{createdt,jdbcType=TIMESTAMP},
 			</if>
-			<if test="corp != null">
-				corp = #{corp,jdbcType=CHAR},
-			</if>
-			<if test="contact != null">
-				contact = #{contact,jdbcType=CHAR},
-			</if>
-			<if test="mobile != null">
-				mobile = #{mobile,jdbcType=CHAR},
-			</if>
-			<if test="telephone != null">
-				telephone = #{telephone,jdbcType=CHAR},
-			</if>
-			<if test="account != null">
-				account = #{account,jdbcType=DOUBLE},
-			</if>
-			<if test="pay_id != null">
-				pay_id = #{pay_id,jdbcType=TINYINT},
+			<if test="createuser != null">
+				createuser = #{createuser,jdbcType=VARCHAR},
 			</if>
 		</set>
-		where user_id = #{user_id,jdbcType=INTEGER}
+		where username = #{username,jdbcType=VARCHAR}
 	</update>
 	<update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdUser">
 		update aduser
-		set username = #{username,jdbcType=CHAR},
-		password = #{password,jdbcType=CHAR},
-		smscode = #{smscode,jdbcType=CHAR},
+		set password = #{password,jdbcType=VARCHAR},
+		smscode = #{smscode,jdbcType=VARCHAR},
+		corp = #{corp,jdbcType=VARCHAR},
+		addr = #{addr,jdbcType=VARCHAR},
+		postcode = #{postcode,jdbcType=VARCHAR},
+		contact = #{contact,jdbcType=VARCHAR},
+		mobile = #{mobile,jdbcType=VARCHAR},
+		telephone = #{telephone,jdbcType=VARCHAR},
+		account = #{account,jdbcType=INTEGER},
+		pay_id = #{pay_id,jdbcType=INTEGER},
 		createdt = #{createdt,jdbcType=TIMESTAMP},
-		corp = #{corp,jdbcType=CHAR},
-		contact = #{contact,jdbcType=CHAR},
-		mobile = #{mobile,jdbcType=CHAR},
-		telephone = #{telephone,jdbcType=CHAR},
-		account = #{account,jdbcType=DOUBLE},
-		pay_id = #{pay_id,jdbcType=TINYINT}
-		where user_id = #{user_id,jdbcType=INTEGER}
+		createuser = #{createuser,jdbcType=VARCHAR}
+		where username = #{username,jdbcType=VARCHAR}
 	</update>
-
-	<select id="findAll" resultMap="BaseResultMap">
+	<select id="findAll" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
 		select * from aduser
 	</select>
-
 	<update id="updateByUserId" parameterType="com.lottery.model.ad.AdUser">
-		update aduser set account=#{account}
-		where user_id = #{user_id,jdbcType=INTEGER}
+		update aduser set
+		account = #{account,jdbcType=INTEGER} where username =
+		#{username,jdbcType=VARCHAR}
 	</update>
-
 </mapper>

@@ -3,7 +3,7 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
-public class AdPlayHis implements Serializable{
+public class AdPlayHis implements Serializable {
     private Integer playhis_id;
 
     private Integer online_id;
@@ -12,7 +12,7 @@ public class AdPlayHis implements Serializable{
 
     private Date enddt;
 
-    private Integer playtime;
+    private Integer duration;
 
     private Date insertdt;
 
@@ -48,12 +48,12 @@ public class AdPlayHis implements Serializable{
         this.enddt = enddt;
     }
 
-    public Integer getPlaytime() {
-        return playtime;
+    public Integer getDuration() {
+        return duration;
     }
 
-    public void setPlaytime(Integer playtime) {
-        this.playtime = playtime;
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public Date getInsertdt() {

@@ -4,11 +4,11 @@
   <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdFee">
     <id column="fee_id" jdbcType="INTEGER" property="fee_id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="price" jdbcType="DOUBLE" property="price" />
-    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="perofnum" jdbcType="INTEGER" property="perofnum" />
+    <result column="price" jdbcType="INTEGER" property="price" />
   </resultMap>
   <sql id="Base_Column_List">
-    fee_id, name, price, method
+    fee_id, name, perofnum, price
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -21,10 +21,10 @@
     where fee_id = #{fee_id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.lottery.model.ad.AdFee">
-    insert into adfee (fee_id, name, price, 
-      method)
-    values (#{fee_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
-      #{method,jdbcType=VARCHAR})
+    insert into adfee (fee_id, name, perofnum, 
+      price)
+    values (#{fee_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{perofnum,jdbcType=INTEGER}, 
+      #{price,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.lottery.model.ad.AdFee">
     insert into adfee
@@ -35,11 +35,11 @@
       <if test="name != null">
         name,
       </if>
+      <if test="perofnum != null">
+        perofnum,
+      </if>
       <if test="price != null">
         price,
-      </if>
-      <if test="method != null">
-        method,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -49,11 +49,11 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="price != null">
-        #{price,jdbcType=DOUBLE},
+      <if test="perofnum != null">
+        #{perofnum,jdbcType=INTEGER},
       </if>
-      <if test="method != null">
-        #{method,jdbcType=VARCHAR},
+      <if test="price != null">
+        #{price,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -63,11 +63,11 @@
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="price != null">
-        price = #{price,jdbcType=DOUBLE},
+      <if test="perofnum != null">
+        perofnum = #{perofnum,jdbcType=INTEGER},
       </if>
-      <if test="method != null">
-        method = #{method,jdbcType=VARCHAR},
+      <if test="price != null">
+        price = #{price,jdbcType=INTEGER},
       </if>
     </set>
     where fee_id = #{fee_id,jdbcType=INTEGER}
@@ -75,8 +75,8 @@
   <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdFee">
     update adfee
     set name = #{name,jdbcType=VARCHAR},
-      price = #{price,jdbcType=DOUBLE},
-      method = #{method,jdbcType=VARCHAR}
+      perofnum = #{perofnum,jdbcType=INTEGER},
+      price = #{price,jdbcType=INTEGER}
     where fee_id = #{fee_id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -2,7 +2,7 @@ package com.lottery.model.ad;
 
 import java.io.Serializable;
 
-public class AdPay implements Serializable{
+public class AdPay implements Serializable {
     private Integer pay_id;
 
     private String name;

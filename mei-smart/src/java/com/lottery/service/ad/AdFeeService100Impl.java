@@ -17,7 +17,7 @@ public class AdFeeService100Impl implements AdFeeService {
 	public int getFeeIdValue(Integer id) {
 		String key = "meismart:ad_user:user_id:1";
 		AdUser adUser = (AdUser)mybatisRedisCache.getObject(key);
-		Double account= adUser.getAccount();
+		int account= adUser.getAccount();
 		adUser.setAccount(account-1);
 		mybatisRedisCache.putObject(key, adUser);
 		return 1;

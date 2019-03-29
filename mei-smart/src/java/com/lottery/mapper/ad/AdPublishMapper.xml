@@ -3,20 +3,20 @@
 <mapper namespace="com.lottery.mapper.ad.AdPublishMapper">
   <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdPublish">
     <id column="publish_id" jdbcType="INTEGER" property="publish_id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="location_id" jdbcType="VARCHAR" property="location_id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="location_id" jdbcType="INTEGER" property="location_id" />
     <result column="startdt" jdbcType="TIMESTAMP" property="startdt" />
     <result column="enddt" jdbcType="TIMESTAMP" property="enddt" />
     <result column="fee_id" jdbcType="INTEGER" property="fee_id" />
-    <result column="price" jdbcType="DOUBLE" property="price" />
-    <result column="createuser" jdbcType="CHAR" property="createuser" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="createuser" jdbcType="VARCHAR" property="createuser" />
     <result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
-    <result column="checkuser" jdbcType="CHAR" property="checkuser" />
+    <result column="checkuser" jdbcType="VARCHAR" property="checkuser" />
     <result column="checkdt" jdbcType="TIMESTAMP" property="checkdt" />
     <result column="status" jdbcType="TINYINT" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
-    publish_id, name, location_id, startdt, enddt, fee_id, price, createuser, createdt, 
+    publish_id, title, location_id, startdt, enddt, fee_id, price, createuser, createdt, 
     checkuser, checkdt, status
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -30,15 +30,15 @@
     where publish_id = #{publish_id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.lottery.model.ad.AdPublish">
-    insert into adpublish (publish_id, name, location_id, 
+    insert into adpublish (publish_id, title, location_id, 
       startdt, enddt, fee_id, 
       price, createuser, createdt, 
       checkuser, checkdt, status
       )
-    values (#{publish_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{location_id,jdbcType=VARCHAR}, 
+    values (#{publish_id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{location_id,jdbcType=INTEGER}, 
       #{startdt,jdbcType=TIMESTAMP}, #{enddt,jdbcType=TIMESTAMP}, #{fee_id,jdbcType=INTEGER}, 
-      #{price,jdbcType=DOUBLE}, #{createuser,jdbcType=CHAR}, #{createdt,jdbcType=TIMESTAMP}, 
-      #{checkuser,jdbcType=CHAR}, #{checkdt,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
+      #{price,jdbcType=INTEGER}, #{createuser,jdbcType=VARCHAR}, #{createdt,jdbcType=TIMESTAMP}, 
+      #{checkuser,jdbcType=VARCHAR}, #{checkdt,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.lottery.model.ad.AdPublish">
@@ -47,8 +47,8 @@
       <if test="publish_id != null">
         publish_id,
       </if>
-      <if test="name != null">
-        name,
+      <if test="title != null">
+        title,
       </if>
       <if test="location_id != null">
         location_id,
@@ -85,11 +85,11 @@
       <if test="publish_id != null">
         #{publish_id,jdbcType=INTEGER},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
       </if>
       <if test="location_id != null">
-        #{location_id,jdbcType=VARCHAR},
+        #{location_id,jdbcType=INTEGER},
       </if>
       <if test="startdt != null">
         #{startdt,jdbcType=TIMESTAMP},
@@ -101,16 +101,16 @@
         #{fee_id,jdbcType=INTEGER},
       </if>
       <if test="price != null">
-        #{price,jdbcType=DOUBLE},
+        #{price,jdbcType=INTEGER},
       </if>
       <if test="createuser != null">
-        #{createuser,jdbcType=CHAR},
+        #{createuser,jdbcType=VARCHAR},
       </if>
       <if test="createdt != null">
         #{createdt,jdbcType=TIMESTAMP},
       </if>
       <if test="checkuser != null">
-        #{checkuser,jdbcType=CHAR},
+        #{checkuser,jdbcType=VARCHAR},
       </if>
       <if test="checkdt != null">
         #{checkdt,jdbcType=TIMESTAMP},
@@ -123,11 +123,11 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdPublish">
     update adpublish
     <set>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
       </if>
       <if test="location_id != null">
-        location_id = #{location_id,jdbcType=VARCHAR},
+        location_id = #{location_id,jdbcType=INTEGER},
       </if>
       <if test="startdt != null">
         startdt = #{startdt,jdbcType=TIMESTAMP},
@@ -139,16 +139,16 @@
         fee_id = #{fee_id,jdbcType=INTEGER},
       </if>
       <if test="price != null">
-        price = #{price,jdbcType=DOUBLE},
+        price = #{price,jdbcType=INTEGER},
       </if>
       <if test="createuser != null">
-        createuser = #{createuser,jdbcType=CHAR},
+        createuser = #{createuser,jdbcType=VARCHAR},
       </if>
       <if test="createdt != null">
         createdt = #{createdt,jdbcType=TIMESTAMP},
       </if>
       <if test="checkuser != null">
-        checkuser = #{checkuser,jdbcType=CHAR},
+        checkuser = #{checkuser,jdbcType=VARCHAR},
       </if>
       <if test="checkdt != null">
         checkdt = #{checkdt,jdbcType=TIMESTAMP},
@@ -161,15 +161,15 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdPublish">
     update adpublish
-    set name = #{name,jdbcType=VARCHAR},
-      location_id = #{location_id,jdbcType=VARCHAR},
+    set title = #{title,jdbcType=VARCHAR},
+      location_id = #{location_id,jdbcType=INTEGER},
       startdt = #{startdt,jdbcType=TIMESTAMP},
       enddt = #{enddt,jdbcType=TIMESTAMP},
       fee_id = #{fee_id,jdbcType=INTEGER},
-      price = #{price,jdbcType=DOUBLE},
-      createuser = #{createuser,jdbcType=CHAR},
+      price = #{price,jdbcType=INTEGER},
+      createuser = #{createuser,jdbcType=VARCHAR},
       createdt = #{createdt,jdbcType=TIMESTAMP},
-      checkuser = #{checkuser,jdbcType=CHAR},
+      checkuser = #{checkuser,jdbcType=VARCHAR},
       checkdt = #{checkdt,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=TINYINT}
     where publish_id = #{publish_id,jdbcType=INTEGER}

@@ -15,5 +15,7 @@ public interface AdOnlineMapper {
 
     int updateByPrimaryKey(AdOnline record);
     
-    AdOnline findByOnlineId(Integer user_id);
+    AdOnline  findByOnlineId(Integer onlineId);
+    
+    AdOnline  findByLocationId(Integer locationId);
 }

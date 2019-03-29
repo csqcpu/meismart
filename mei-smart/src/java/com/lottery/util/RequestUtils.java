@@ -1,6 +1,7 @@
 package com.lottery.util;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +18,8 @@ public class RequestUtils {
 		String submitMehtod = request.getMethod();
 		// GET
 		if (submitMehtod.equals("GET")) {
-			return new String(request.getQueryString().getBytes("iso-8859-1"), "utf-8").replaceAll("%22", "\"");
+			String s = new String(request.getQueryString().getBytes("iso-8859-1"), "utf-8");//。replaceAll("%22", "\"");
+			return URLDecoder.decode(s);
 			// POST
 		} else {
 			return getRequestPostStr(request);

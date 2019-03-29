@@ -6,11 +6,11 @@
     <result column="online_id" jdbcType="INTEGER" property="online_id" />
     <result column="startdt" jdbcType="TIMESTAMP" property="startdt" />
     <result column="enddt" jdbcType="TIMESTAMP" property="enddt" />
-    <result column="playtime" jdbcType="INTEGER" property="playtime" />
+    <result column="duration" jdbcType="INTEGER" property="duration" />
     <result column="insertdt" jdbcType="TIMESTAMP" property="insertdt" />
   </resultMap>
   <sql id="Base_Column_List">
-    playhis_id, online_id, startdt, enddt, playtime, insertdt
+    playhis_id, online_id, startdt, enddt, duration, insertdt
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -23,11 +23,11 @@
     where playhis_id = #{playhis_id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.lottery.model.ad.AdPlayHis">
-    insert into adplayhis (online_id, startdt, 
-      enddt, playtime, insertdt
+    insert into adplayhis (playhis_id, online_id, startdt, 
+      enddt, duration, insertdt
       )
-    values (#{online_id,jdbcType=INTEGER}, #{startdt,jdbcType=TIMESTAMP}, 
-      #{enddt,jdbcType=TIMESTAMP}, #{playtime,jdbcType=INTEGER}, NOW()
+    values (#{playhis_id,jdbcType=INTEGER}, #{online_id,jdbcType=INTEGER}, #{startdt,jdbcType=TIMESTAMP}, 
+      #{enddt,jdbcType=TIMESTAMP}, #{duration,jdbcType=INTEGER}, #{insertdt,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.lottery.model.ad.AdPlayHis">
@@ -45,8 +45,8 @@
       <if test="enddt != null">
         enddt,
       </if>
-      <if test="playtime != null">
-        playtime,
+      <if test="duration != null">
+        duration,
       </if>
       <if test="insertdt != null">
         insertdt,
@@ -65,8 +65,8 @@
       <if test="enddt != null">
         #{enddt,jdbcType=TIMESTAMP},
       </if>
-      <if test="playtime != null">
-        #{playtime,jdbcType=INTEGER},
+      <if test="duration != null">
+        #{duration,jdbcType=INTEGER},
       </if>
       <if test="insertdt != null">
         #{insertdt,jdbcType=TIMESTAMP},
@@ -85,8 +85,8 @@
       <if test="enddt != null">
         enddt = #{enddt,jdbcType=TIMESTAMP},
       </if>
-      <if test="playtime != null">
-        playtime = #{playtime,jdbcType=INTEGER},
+      <if test="duration != null">
+        duration = #{duration,jdbcType=INTEGER},
       </if>
       <if test="insertdt != null">
         insertdt = #{insertdt,jdbcType=TIMESTAMP},
@@ -99,7 +99,7 @@
     set online_id = #{online_id,jdbcType=INTEGER},
       startdt = #{startdt,jdbcType=TIMESTAMP},
       enddt = #{enddt,jdbcType=TIMESTAMP},
-      playtime = #{playtime,jdbcType=INTEGER},
+      duration = #{duration,jdbcType=INTEGER},
       insertdt = #{insertdt,jdbcType=TIMESTAMP}
     where playhis_id = #{playhis_id,jdbcType=INTEGER}
   </update>

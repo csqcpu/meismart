@@ -2,9 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lottery.mapper.ad.AdPayMapper">
   <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdPay">
-    <result column="pay_id" jdbcType="INTEGER" property="pay_id" />
+    <id column="pay_id" jdbcType="INTEGER" property="pay_id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
   </resultMap>
+  <sql id="Base_Column_List">
+    pay_id, name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from adpay
+    where pay_id = #{pay_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from adpay
+    where pay_id = #{pay_id,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.lottery.model.ad.AdPay">
     insert into adpay (pay_id, name)
     values (#{pay_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR})
@@ -28,4 +41,18 @@
       </if>
     </trim>
   </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdPay">
+    update adpay
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where pay_id = #{pay_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdPay">
+    update adpay
+    set name = #{name,jdbcType=VARCHAR}
+    where pay_id = #{pay_id,jdbcType=INTEGER}
+  </update>
 </mapper>

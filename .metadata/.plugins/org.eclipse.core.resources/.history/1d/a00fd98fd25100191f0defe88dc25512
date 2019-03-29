@@ -1,0 +1,24 @@
+package com.lottery.mapper.ad;
+
+import java.util.List;
+
+import com.lottery.model.ad.AdUser;
+import com.lottery.model.ad.AdUserKey;
+
+public interface AdUserMapper {
+    int deleteByPrimaryKey(AdUserKey key);
+
+    int insert(AdUser record);
+
+    int insertSelective(AdUser record);
+
+    AdUser selectByPrimaryKey(AdUserKey key);
+
+    int updateByPrimaryKeySelective(AdUser record);
+
+    int updateByPrimaryKey(AdUser record);
+    
+    List<AdUser> findAll();
+    
+    int updateByUserId(AdUser adUser);
+}

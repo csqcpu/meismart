@@ -17,11 +17,11 @@ import com.lottery.service.ad.AdUserService;
 import com.lottery.util.Object2Map;
 
 @Service
-public class SynAdUserService implements ApplicationListener<ContextRefreshedEvent> {
-	private static Logger logger = Logger.getLogger(SynAdUserService.class);
+public class SynAdUserSchedule implements ApplicationListener<ContextRefreshedEvent> {
+	private static Logger logger = Logger.getLogger(SynAdUserSchedule.class);
 	@Autowired
 	AdUserService adUserService;
-	MybatisRedisCache mybatisRedisCache = new MybatisRedisCache(SynAdUserService.class.toString());
+	MybatisRedisCache mybatisRedisCache = new MybatisRedisCache(SynAdUserSchedule.class.toString());
 	final static String ADUSER_KEYS = "aduser_keys";
 
 	// 加载数据到redis
@@ -32,7 +32,7 @@ public class SynAdUserService implements ApplicationListener<ContextRefreshedEve
 			return;
 		}
 		for (AdUser adUser : adUserList) {
-			String key = "adUser:id:" + adUser.getUser_id();
+			String key = "aduser:username:" + adUser.getUsername();
 			if (mybatisRedisCache.getObject(key) == null) {
 				mybatisRedisCache.putObject(key, adUser);
 				logger.info("成功加载数据" + key + "->" + adUser.toString());

@@ -1,5 +1,6 @@
 package com.lottery.redis;
 
+import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+@Service
 public class MybatisRedisCache implements Cache {
 
 	private static JedisConnectionFactory jedisConnectionFactory;
@@ -20,6 +22,10 @@ public class MybatisRedisCache implements Cache {
 	private final String id;
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+	
+	public MybatisRedisCache() {
+		this.id = UUID.randomUUID().toString();
+	}
 
 	public MybatisRedisCache(final String id) {
 		if (id == null) {
@@ -126,6 +132,41 @@ public class MybatisRedisCache implements Cache {
 		}
 		return result;
 	}
+	
+	public long mqSend(Object topic,Object msg) {
+		RedisConnection connection = null;
+		long count=0;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer();
+			count=connection.lPush(topic.toString().getBytes(), serializer.serialize(msg));
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+		return count;
+	}
+	
+	public Object mqReceiverd(Object topic) {
+		RedisConnection connection = null;
+		Object result = null;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer();
+			result= serializer.deserialize(connection.rPop(topic.toString().getBytes()));
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+		return result;
+	}
+	
 
 	public static void setJedisConnectionFactory(JedisConnectionFactory jedisConnectionFactory) {
 		MybatisRedisCache.jedisConnectionFactory = jedisConnectionFactory;
