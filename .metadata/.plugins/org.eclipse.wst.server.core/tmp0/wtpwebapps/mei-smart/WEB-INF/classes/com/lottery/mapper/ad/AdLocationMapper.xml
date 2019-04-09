@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.ad.AdLocationMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdLocation">
+    <id column="location_id" jdbcType="INTEGER" property="location_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="descript" jdbcType="VARCHAR" property="descript" />
+    <result column="imageurl" jdbcType="VARCHAR" property="imageurl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    location_id, name, descript, imageurl
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from adlocation
+    where location_id = #{location_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from adlocation
+    where location_id = #{location_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.model.ad.AdLocation">
+    insert into adlocation (location_id, name, descript, 
+      imageurl)
+    values (#{location_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{descript,jdbcType=VARCHAR}, 
+      #{imageurl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.ad.AdLocation">
+    insert into adlocation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="location_id != null">
+        location_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="descript != null">
+        descript,
+      </if>
+      <if test="imageurl != null">
+        imageurl,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="location_id != null">
+        #{location_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="descript != null">
+        #{descript,jdbcType=VARCHAR},
+      </if>
+      <if test="imageurl != null">
+        #{imageurl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdLocation">
+    update adlocation
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="descript != null">
+        descript = #{descript,jdbcType=VARCHAR},
+      </if>
+      <if test="imageurl != null">
+        imageurl = #{imageurl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where location_id = #{location_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdLocation">
+    update adlocation
+    set name = #{name,jdbcType=VARCHAR},
+      descript = #{descript,jdbcType=VARCHAR},
+      imageurl = #{imageurl,jdbcType=VARCHAR}
+    where location_id = #{location_id,jdbcType=INTEGER}
+  </update>
+</mapper>
