@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.ad.AdOnlineMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdOnline">
+    <id column="online_id" jdbcType="INTEGER" property="online_id" />
+    <result column="public_id" jdbcType="INTEGER" property="public_id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="cont" jdbcType="VARCHAR" property="cont" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="location_id" jdbcType="INTEGER" property="location_id" />
+    <result column="startdt" jdbcType="TIMESTAMP" property="startdt" />
+    <result column="enddt" jdbcType="TIMESTAMP" property="enddt" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="fee_id" jdbcType="INTEGER" property="fee_id" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    online_id, public_id, title, cont, url, location_id, startdt, enddt, username, fee_id, 
+    status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from adonline
+    where online_id = #{online_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from adonline
+    where online_id = #{online_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.model.ad.AdOnline">
+    insert into adonline (online_id, public_id, title, 
+      cont, url, location_id, 
+      startdt, enddt, username, 
+      fee_id, status)
+    values (#{online_id,jdbcType=INTEGER}, #{public_id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{cont,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{location_id,jdbcType=INTEGER}, 
+      #{startdt,jdbcType=TIMESTAMP}, #{enddt,jdbcType=TIMESTAMP}, #{username,jdbcType=VARCHAR}, 
+      #{fee_id,jdbcType=INTEGER}, #{status,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.ad.AdOnline">
+    insert into adonline
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="online_id != null">
+        online_id,
+      </if>
+      <if test="public_id != null">
+        public_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="cont != null">
+        cont,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="location_id != null">
+        location_id,
+      </if>
+      <if test="startdt != null">
+        startdt,
+      </if>
+      <if test="enddt != null">
+        enddt,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="fee_id != null">
+        fee_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="online_id != null">
+        #{online_id,jdbcType=INTEGER},
+      </if>
+      <if test="public_id != null">
+        #{public_id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="cont != null">
+        #{cont,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="location_id != null">
+        #{location_id,jdbcType=INTEGER},
+      </if>
+      <if test="startdt != null">
+        #{startdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddt != null">
+        #{enddt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_id != null">
+        #{fee_id,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdOnline">
+    update adonline
+    <set>
+      <if test="public_id != null">
+        public_id = #{public_id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="cont != null">
+        cont = #{cont,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="location_id != null">
+        location_id = #{location_id,jdbcType=INTEGER},
+      </if>
+      <if test="startdt != null">
+        startdt = #{startdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddt != null">
+        enddt = #{enddt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_id != null">
+        fee_id = #{fee_id,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where online_id = #{online_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdOnline">
+    update adonline
+    set public_id = #{public_id,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      cont = #{cont,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      location_id = #{location_id,jdbcType=INTEGER},
+      startdt = #{startdt,jdbcType=TIMESTAMP},
+      enddt = #{enddt,jdbcType=TIMESTAMP},
+      username = #{username,jdbcType=VARCHAR},
+      fee_id = #{fee_id,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT}
+    where online_id = #{online_id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findByOnlineId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from adonline where online_id = #{online_id,jdbcType=INTEGER}
+  </select>
+  
+   <select id="findByLocationId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from adonline where location_id = #{location_id,jdbcType=INTEGER}
+  </select>
+</mapper>
