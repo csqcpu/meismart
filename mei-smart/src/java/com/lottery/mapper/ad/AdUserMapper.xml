@@ -16,8 +16,10 @@
 		<result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
 		<result column="createuser" jdbcType="VARCHAR" property="createuser" />
 	</resultMap>
+	<cache type="com.lottery.redis.MybatisRedisCache" />
 	<sql id="Base_Column_List">
-		username, password, smscode, corp, addr, postcode, contact, mobile, telephone,
+		username, password, smscode, corp, addr, postcode, contact,
+		mobile, telephone,
 		account,
 		pay_id, createdt, createuser
 	</sql>
@@ -33,17 +35,21 @@
 		where username = #{username,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert" parameterType="com.lottery.model.ad.AdUser">
-		insert into aduser (username, password, smscode,
+		insert into aduser (username,
+		password, smscode,
 		corp, addr, postcode,
 		contact, mobile, telephone,
 		account, pay_id, createdt,
 		createuser)
-		values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		values
+		(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
 		#{smscode,jdbcType=VARCHAR},
-		#{corp,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR},
+		#{corp,jdbcType=VARCHAR},
+		#{addr,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR},
 		#{contact,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
 		#{telephone,jdbcType=VARCHAR},
-		#{account,jdbcType=INTEGER}, #{pay_id,jdbcType=INTEGER}, #{createdt,jdbcType=TIMESTAMP},
+		#{account,jdbcType=INTEGER},
+		#{pay_id,jdbcType=INTEGER}, #{createdt,jdbcType=TIMESTAMP},
 		#{createuser,jdbcType=VARCHAR})
 	</insert>
 	<insert id="insertSelective" parameterType="com.lottery.model.ad.AdUser">
@@ -175,19 +181,25 @@
 	</update>
 	<update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdUser">
 		update aduser
-		set password = #{password,jdbcType=VARCHAR},
-		smscode = #{smscode,jdbcType=VARCHAR},
+		set
+		password = #{password,jdbcType=VARCHAR},
+		smscode =
+		#{smscode,jdbcType=VARCHAR},
 		corp = #{corp,jdbcType=VARCHAR},
-		addr = #{addr,jdbcType=VARCHAR},
+		addr =
+		#{addr,jdbcType=VARCHAR},
 		postcode = #{postcode,jdbcType=VARCHAR},
 		contact = #{contact,jdbcType=VARCHAR},
-		mobile = #{mobile,jdbcType=VARCHAR},
+		mobile =
+		#{mobile,jdbcType=VARCHAR},
 		telephone = #{telephone,jdbcType=VARCHAR},
 		account = #{account,jdbcType=INTEGER},
-		pay_id = #{pay_id,jdbcType=INTEGER},
+		pay_id =
+		#{pay_id,jdbcType=INTEGER},
 		createdt = #{createdt,jdbcType=TIMESTAMP},
 		createuser = #{createuser,jdbcType=VARCHAR}
-		where username = #{username,jdbcType=VARCHAR}
+		where username =
+		#{username,jdbcType=VARCHAR}
 	</update>
 	<select id="findAll" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">

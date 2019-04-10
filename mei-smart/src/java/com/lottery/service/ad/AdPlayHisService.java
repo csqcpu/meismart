@@ -19,5 +19,8 @@ public class AdPlayHisService{
 	public int insert(AdPlayHis adPlayHis){
 		return adPlayHisMapper.insert(adPlayHis);
 	}
+	public int insertByBatch(List<AdPlayHis> adPlayHisList){
+		return adPlayHisMapper.insertByBatch(adPlayHisList);
+	}
 
 }

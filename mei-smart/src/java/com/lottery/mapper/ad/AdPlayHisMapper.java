@@ -1,5 +1,7 @@
 package com.lottery.mapper.ad;
 
+import java.util.List;
+
 import com.lottery.model.ad.AdPlayHis;
 
 public interface AdPlayHisMapper {
@@ -14,4 +16,6 @@ public interface AdPlayHisMapper {
     int updateByPrimaryKeySelective(AdPlayHis record);
 
     int updateByPrimaryKey(AdPlayHis record);
+    
+    int insertByBatch(List<AdPlayHis> recordList);
 }

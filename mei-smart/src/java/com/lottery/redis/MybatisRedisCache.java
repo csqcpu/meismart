@@ -167,6 +167,35 @@ public class MybatisRedisCache implements Cache {
 		return result;
 	}
 	
+	public void watch(Object key) {
+		RedisConnection connection = null;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			connection.watch(key.toString().getBytes());
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	}
+	
+	public void multi() {
+		RedisConnection connection = null;
+		long count=0;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			connection.multi();
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	}	
+	
 
 	public static void setJedisConnectionFactory(JedisConnectionFactory jedisConnectionFactory) {
 		MybatisRedisCache.jedisConnectionFactory = jedisConnectionFactory;

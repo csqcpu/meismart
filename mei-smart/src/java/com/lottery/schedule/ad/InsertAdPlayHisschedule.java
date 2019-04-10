@@ -47,16 +47,28 @@ public class InsertAdPlayHisschedule implements ApplicationListener<ContextRefre
 	}
 
 	public void processAdPlayHisMQ() throws InterruptedException {
+		List<AdPlayHis> adPlayHisList = new ArrayList<AdPlayHis>();
 		AdPlayHis adPlayHis = (AdPlayHis) mybatisRedisCache.mqReceiverd(ADPLAYHIS_MQ);
 		Integer insCount = 0;
+		//测试插表时间比较
+		long startdt = System.currentTimeMillis();
 		while (adPlayHis != null) {
 			adPlayHisService.insert(adPlayHis);
+			adPlayHisList.add(adPlayHis);
 			insCount++;
-			Thread.sleep(10000);
+			//Thread.sleep(10000);
 			adPlayHis = (AdPlayHis) mybatisRedisCache.mqReceiverd(ADPLAYHIS_MQ);
-			logger.info("处理广告MQ条数：" + insCount);
 		}
-
+		long enddt = System.currentTimeMillis();
+		logger.info("处理广告MQ条数：" + insCount);
+		logger.info("逐条插表时间："+(enddt-startdt)+"ms");
+		startdt = System.currentTimeMillis();
+		if (adPlayHisList.isEmpty() == false) {
+			adPlayHisService.insertByBatch(adPlayHisList);
+		}
+		enddt = System.currentTimeMillis();
+		logger.info("批量插表时间："+(enddt-startdt)+"ms");
+		
 	}
 
 	// 加载秒杀数据，这里主要加载改动频繁的数据,定时更新
