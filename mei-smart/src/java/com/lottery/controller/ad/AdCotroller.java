@@ -48,6 +48,28 @@ public class AdCotroller implements ApplicationContextAware {
 	MybatisRedisCache mybatisRedisCache;
 	ApplicationContext applicationContext;
 	Semaphore feeSemaphore = new Semaphore(1, true);
+	
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/userlogin")
+	public void userlogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		Integer locationid = requestJson.getInteger("locationid");
+		AdOnline adOnline = adOnlineService.findByOnlineId(locationid);
+		if (adOnline == null) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", -1);
+			jsonObject.put("msg", "locationid=" + locationid + " not found");
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+			return;
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 200);
+		jsonObject.put("onlineid", adOnline.getOnline_id());
+		jsonObject.put("url", adOnline.getUrl());
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "/rest/ad/getvideoad")

@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
 encoding//WebApp/WEB-INF/hello.jsp=UTF-8
+encoding//WebApp/layuiadmin/tpl/layim/demo.html=UTF-8
+encoding//WebApp/layuiadmin/tpl/system/about.html=UTF-8
 encoding//src/resources/redis.properties=UTF-8
 encoding/<project>=UTF-8
