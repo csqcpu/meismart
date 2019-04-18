@@ -18,7 +18,7 @@
 
     <div class="layadmin-user-login-main">
       <div class="layadmin-user-login-box layadmin-user-login-header">
-        <h2>layuiAdmin</h2>
+        <h2>惠多智能管理系统</h2>
         <p>layui 官方出品的单页面后台管理模板系统</p>
       </div>
       <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
@@ -85,9 +85,33 @@
     </div>-->
     
   </div>
-
+  <script src="../../layuiadmin/util/jquery.min.js"></script>
   <script src="../../layuiadmin/layui/layui.js"></script>  
+  <script src="../../layuiadmin/util/md5.js"></script>  
+  <script src="../../layuiadmin/util/aes.js"></script>  
   <script>
+  function encrypt(word,password){
+	  password += ''
+        var len = password.length
+	    if(len<16){
+	    	for(var i=0; i<16-len; i++){
+	    		password=password+' '
+	    	}
+	    }
+	    //var key = CryptoJS.enc.Utf8.parse("abcdefgabcdefg12");
+	    var key = CryptoJS.enc.Utf8.parse(password);
+	    var srcs = CryptoJS.enc.Utf8.parse(word);
+	    var encrypted = CryptoJS.AES.encrypt(srcs, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+	    return encrypted.toString();
+	}
+  
+
+  function decrypt(word,password){
+    var key = CryptoJS.enc.Utf8.parse(password);
+    var decrypt = CryptoJS.AES.decrypt(word, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+    return CryptoJS.enc.Utf8.stringify(decrypt).toString();
+}
+  
   layui.config({
     base: '../../layuiadmin/' //静态资源所在路径
   }).extend({
@@ -107,9 +131,18 @@
     
       //请求登入接口
       admin.req({
-        //url: layui.setter.base + 'json/user/login.js' //实际使用请改成服务端真实接口
+ //       url: layui.setter.base + 'json/user/login.js' //实际使用请改成服务端真实接口
         url: '../../../rest/ad/userlogin' //实际使用请改成服务端真实接口
-        ,data: JSON.stringify(obj.field)
+ //       ,data: JSON.stringify(obj.field)
+        ,data:function(){
+        	//var data={}
+        	//data['password']=encrypt(obj.field.username);
+         	//var arr={};
+        	//arr['username']=obj.field.username;
+        	//arr['data']=data;
+        	obj.field['password']=encrypt(obj.field.password,obj.field.password);
+        	//obj.field['password']=$.md5(obj.field.password);
+        	return JSON.stringify(obj.field);}()
         ,method:'post'
         ,contentType:'application/json'
         ,done: function(res){
@@ -126,7 +159,7 @@
             ,icon: 1
             ,time: 1000
           }, function(){
-            location.href = '../'; //后台主页
+            location.href = '../index.html'; //后台主页
           });
         }
       });

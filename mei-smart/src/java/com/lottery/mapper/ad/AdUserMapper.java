@@ -22,4 +22,6 @@ public interface AdUserMapper {
     List<AdUser> findAll();
     
     int updateByUserId(AdUser adUser);
+    
+    AdUser findByUserName(String username);
 }

@@ -205,9 +205,15 @@
 		resultMap="BaseResultMap">
 		select * from aduser
 	</select>
+	
 	<update id="updateByUserId" parameterType="com.lottery.model.ad.AdUser">
 		update aduser set
 		account = #{account,jdbcType=INTEGER} where username =
 		#{username,jdbcType=VARCHAR}
 	</update>
+	
+	<select id="findByUserName" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select * from aduser where username=#{username,jdbcType=VARCHAR}
+	</select>
 </mapper>

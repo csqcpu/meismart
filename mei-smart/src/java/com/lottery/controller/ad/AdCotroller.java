@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.util.RequestUtil;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lottery.model.ad.AdOnline;
 import com.lottery.model.ad.AdPlayHis;
@@ -32,6 +36,8 @@ import com.lottery.schedule.ad.InsertAdPlayHisschedule;
 import com.lottery.service.ad.AdFeeService;
 import com.lottery.service.ad.AdOnlineService;
 import com.lottery.service.ad.AdPlayHisService;
+import com.lottery.service.ad.AdUserService;
+import com.lottery.util.AES;
 import com.lottery.util.RequestUtils;
 
 import redis.clients.jedis.Transaction;
@@ -43,6 +49,8 @@ public class AdCotroller implements ApplicationContextAware {
 	@Autowired
 	private AdOnlineService adOnlineService;
 	@Autowired
+	private AdUserService adUserService;
+	@Autowired
 	private AdPlayHisService adPlayHisService;
 	@Autowired
 	MybatisRedisCache mybatisRedisCache;
@@ -53,20 +61,45 @@ public class AdCotroller implements ApplicationContextAware {
 	@RequestMapping(value = "/rest/ad/userlogin")
 	public void userlogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
-		Integer locationid = requestJson.getInteger("locationid");
-		AdOnline adOnline = adOnlineService.findByOnlineId(locationid);
-		if (adOnline == null) {
+		String username = requestJson.getString("username");
+		String password = requestJson.getString("password");
+		AdUser adUser = adUserService.findByUserName(username);
+		try {
+			password = AES.aesDecrypt(password,AES.complementKey(adUser.getPassword(),16));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (adUser == null) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", -1);
-			jsonObject.put("msg", "locationid=" + locationid + " not found");
+			jsonObject.put("msg", "username=" + username + " not found");
 			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 			response.setContentType("text/json; charset=UTF-8");
 			return;
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("code", 200);
-		jsonObject.put("onlineid", adOnline.getOnline_id());
-		jsonObject.put("url", adOnline.getUrl());
+		jsonObject.put("msg", "登入成功");
+		JSONObject jsondata = new JSONObject();
+		jsondata.put("access_token", "c262e61cd13ad99fc650e6908c7e5e65b63d2f32185ecfed6b801ee3fbdd5c0a");
+		jsonObject.put("data", jsondata);
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/getuser")
+	public void getuser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		int page = requestJson.getInteger("page");
+		int limit = requestJson.getInteger("limit");
+		List<AdUser> adUserList = adUserService.findAll();
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("msg", "成功");
+		jsonObject.put("count", adUserList.size());		
+		jsonObject.put("data", adUserList);
 		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 		response.setContentType("text/json; charset=UTF-8");
 	}

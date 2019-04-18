@@ -29,5 +29,12 @@ public class AdUserService{
     public int updateByUserId(AdUser adUser){
     	return adUserMapper.updateByUserId(adUser);
     }
+    public AdUser findByUserName(String userName){
+    	return adUserMapper.findByUserName(userName);
+    }
+    
+    public AdUser find(String userName){
+    	return adUserMapper.findByUserName(userName);
+    }
 
 }
