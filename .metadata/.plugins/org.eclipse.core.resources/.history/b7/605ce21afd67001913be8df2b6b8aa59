@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.sys.SysMenuMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.sys.SysMenu">
+    <id column="menu_id" jdbcType="INTEGER" property="menu_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="href" jdbcType="VARCHAR" property="href" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="group" jdbcType="VARCHAR" property="group" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    menu_id, name, href, pid, group
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sysmenu
+    where menu_id = #{menu_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sysmenu
+    where id = #{menu_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.model.sys.SysMenu">
+    insert into sysmenu (menu_id, name, href, 
+      pid, group)
+    values (#{menu_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{href,jdbcType=VARCHAR}, 
+      #{pid,jdbcType=INTEGER}, #{group,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.sys.SysMenu">
+    insert into sysmenu
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="menu_id != null">
+        menu_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="href != null">
+        href,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="group != null">
+        group,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="menu_id != null">
+        #{menu_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="href != null">
+        #{href,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="group != null">
+        #{group,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.sys.SysMenu">
+    update sysmenu
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="href != null">
+        href = #{href,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="group != null">
+        group = #{group,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where menu_id = #{menu_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.sys.SysMenu">
+    update sysmenu
+    set name = #{name,jdbcType=VARCHAR},
+      href = #{href,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      group = #{group,jdbcType=VARCHAR}
+    where menu_id = #{menu_id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="findByMenuIds" parameterType="Map">
+    select * from sysmenu where menu_id in
+       <foreach collection="MenuIds" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+       </foreach>    
+  </select>
+</mapper>

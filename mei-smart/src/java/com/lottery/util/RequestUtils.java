@@ -5,13 +5,17 @@ import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.alibaba.fastjson.JSONObject;
+
 
 public class RequestUtils {
 
 	public static JSONObject getRequestJsonObject(HttpServletRequest request) throws IOException {
 		String json = getRequestJsonString(request);
-		return JSONObject.parseObject(json);
+		json= StringEscapeUtils.unescapeJavaScript(json);
+		return (JSONObject) JSONObject.parse(json);
 	}
 
 	public static String getRequestJsonString(HttpServletRequest request) throws IOException {

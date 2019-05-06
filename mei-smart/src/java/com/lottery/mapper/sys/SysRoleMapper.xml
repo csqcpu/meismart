@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.sys.SysRoleMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.sys.SysRole">
+    <result column="role_id" jdbcType="INTEGER" property="role_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="mean" jdbcType="VARCHAR" property="mean" />
+    <result column="permission" jdbcType="VARCHAR" property="permission" />
+  </resultMap>
+  <insert id="insert" parameterType="com.lottery.model.sys.SysRole">
+    insert into sysrole (role_id, name, description, 
+      mean, permission)
+    values (#{role_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{mean,jdbcType=VARCHAR}, #{permission,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.sys.SysRole">
+    insert into sysrole
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="role_id != null">
+        role_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="mean != null">
+        mean,
+      </if>
+      <if test="permission != null">
+        permission,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="role_id != null">
+        #{role_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="mean != null">
+        #{mean,jdbcType=VARCHAR},
+      </if>
+      <if test="permission != null">
+        #{permission,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+   <select id="findByRoleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from sysrole where role_id= #{roleId,jdbcType=INTEGER}
+  </select>
+</mapper>

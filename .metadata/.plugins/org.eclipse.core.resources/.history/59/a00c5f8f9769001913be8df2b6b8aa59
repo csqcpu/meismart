@@ -1,0 +1,342 @@
+/** layuiAdmin.std-v1.1.0 LPPL License By http://www.layui.com/admin/ */ ;
+layui.define(["table", "form"], function(e) {
+	var t = layui.$,
+		i = layui.table;
+	layui.form;
+	i.render({
+		elem: "#LAY-adcontent-manage",
+		url: layui.setter.base + "../../rest/ad/getcontent",
+        method:'post',
+        contentType:'application/json',
+        where: function(){
+        	var output={}
+        	output['token']=layui.data(layui.setter.tableName).token
+        	output['timestamp']=layui.data(layui.setter.tableName).timestamp
+        	return output
+        }(),
+        done: function (res) {
+        		   var a = decrypt(res.data,layui.data(layui.setter.tableName).password)
+        		   //b = JSON.parse(a)
+        		   //res.data=b
+        		  // return JSON.parse(a)
+        	 },
+		cols: [
+			[{
+				type: "checkbox",
+				fixed: "left"
+			},{
+				field: "content_id",
+				title: "编号",
+				minWidth: 100
+			}, {
+				field: "title",
+				title: "广告主题",
+				minWidth: 100
+			},	{
+				field: "type_id",
+				title: "类型"
+			}, {
+				field: "content",
+				title: "文字内容"
+			}, {
+				field: "url",
+				title: "广告地址",
+				templet: "#videoTpl",
+				width: 200
+			}, {
+				field: "description",
+				title: "广告描述",
+				width: 100
+			}, {
+				field: "status",
+				title: "审核状态",
+				templet: "#buttonTpl",
+				sort: !0
+			}, {				
+				field: "createdt",
+				title: "创建时间",
+				sort: !0
+			}, {
+				field: "createuser",
+				title: "创建用户",
+				sort: !0
+			}, {
+				field: "checkdt",
+				title: "审核时间",
+				templet: "#buttonTpl",
+				minWidth: 80,
+				align: "center",
+				sort: !0
+			}, {
+				field: "checkuser",
+				title: "审核人",
+				sort: !0
+			}, {
+				title: "操作",
+				minWidth: 250,				
+				align: "left",
+				fixed: "right",
+				toolbar: "#table-useradmin-webuser"
+			}]
+		],
+		page: !0,
+		limit: 30,
+		height: "full-220",
+		text: "对不起，加载出现异常！"
+	}), i.on("tool(LAY-adcontent-manage)", function(e) {
+		e.data;
+		var jsondata = JSON.stringify(e.data)
+		if ("del" === e.event) layer.prompt({
+			formType: 1,
+			title: "敏感操作，请验证口令"
+		}, function(t, i) {
+			layer.close(i), layer.confirm("真的删除行么", function(t) {
+				e.del(), layer.close(t),
+				 $.ajax({
+		                type: 'POST',
+		                url: layui.setter.base + "../../rest/ad/deluser",
+		                contentType: 'application/json',
+		                data: function(){
+		                	return JSON.stringify(e.data);
+		                }(),
+		                dataType: "json",
+		                success: function(data) {
+		                    if(data.code==0){
+		                        //登入成功的提示与跳转
+		                        layer.msg('删除用户成功', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                        	layui.table.reload("LAY-adcontent-manage")
+		                          //location.href = '../index.html'; //后台主页
+		                        });
+		                    }
+		                    else{
+		                        layer.msg('删除用户失败:'+data.msg, {
+			                          offset: '15px'
+			                          ,icon: 1
+			                          ,time: 1000
+			                        }, function(){
+			                        //  location.href = '../index.html'; //后台主页
+			                        });
+		                    }
+		                },
+		                error: function(e, t) {
+	                        layer.msg('删除用户失败：', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                       //   location.href = '../index.html'; //后台主页
+		                        });
+		                }
+		            })
+			})
+		});
+		else if ("edit" === e.event) {
+			t(e.tr);
+			layer.open({
+				type: 2,
+				title: "编辑用户",
+				content: "../../views/ad/userform.html",
+				maxmin: !0,
+				area: ["500px", "650px"],
+				//area: ["500px", "450px"],
+				btn: ["确定", "取消"],
+				yes: function(e, t) {
+					var l = window["layui-layer-iframe" + e],
+						r = "LAY-adcontent-front-submit",
+						n = t.find("iframe").contents().find("#" + r);
+					l.layui.form.on("submit(" + r + ")", function(t) {
+						t.field;
+						i.reload("LAY-adcontent-front-submit"), layer.close(e)
+					}), n.trigger("click")
+				},
+				success: function(layero, index) {
+				    var body = layer.getChildFrame('body', index);
+				    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+				    iframeWin.document.getElementsByName('username')[0].value=e.data.username||''
+				    iframeWin.document.getElementsByName('corp')[0].value=e.data.corp||''
+				    iframeWin.document.getElementsByName('contact')[0].value=e.data.contact||''
+				    iframeWin.document.getElementsByName('mobile')[0].value=e.data.mobile||''
+				    iframeWin.document.getElementsByName('telephone')[0].value=e.data.telephone||''
+				    iframeWin.document.getElementsByName('addr')[0].value=e.data.addr||''
+				    iframeWin.document.getElementsByName('postcode')[0].value=e.data.postcode||''
+				    iframeWin.document.getElementsByName('account')[0].value=e.data.account||''
+				    //body.find(".phone").val('12345678901');
+					}
+			})
+		}
+		else if ("play" === e.event) {
+			t(e.tr);
+			layer.open({
+				type: 2,
+				title: "广告预览",
+				content: "../../views/ad/playadvideo.html",
+				maxmin: !0,
+				area: ["850px", "650px"],
+				//area: ["500px", "450px"],
+				btn: ["确定", "取消"],
+				yes: function(e, t) {
+					layer.close(e)
+				},
+				success: function(layero, index) {
+				    var body = layer.getChildFrame('body', index);
+				    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+				    if(e.data.type_id==0){
+				    iframeWin.document.getElementsByName('video')[0].src=e.data.url||''
+				    iframeWin.document.getElementsByName('video')[0].play()
+				    }else if(e.data.type_id==1){
+					    iframeWin.document.getElementsByName('video')[0].poster=e.data.url||''
+					    iframeWin.document.getElementsByName('video')[0].play()	
+						 // 图片地址
+					    var img_url = e.data.url;
+					    // 创建对象
+					    var img = new Image();
+					    // 改变图片的src
+					    img.src = img_url;
+					    iframeWin.document.getElementsByName('video_widthheight')[0].value=img.width+"x"+img.height
+				    }
+
+
+//				    iframeWin.document.getElementsByName('corp')[0].value=e.data.corp||''
+//				    iframeWin.document.getElementsByName('contact')[0].value=e.data.contact||''
+//				    iframeWin.document.getElementsByName('mobile')[0].value=e.data.mobile||''
+//				    iframeWin.document.getElementsByName('telephone')[0].value=e.data.telephone||''
+//				    iframeWin.document.getElementsByName('addr')[0].value=e.data.addr||''
+//				    iframeWin.document.getElementsByName('postcode')[0].value=e.data.postcode||''
+//				    iframeWin.document.getElementsByName('account')[0].value=e.data.account||''
+				    //body.find(".phone").val('12345678901');
+					}
+			})
+		}
+	}), i.render({
+		elem: "#LAY-adcontent-back-manage",
+		url: layui.setter.base + "json/useradmin/mangadmin.js",
+		cols: [
+			[{
+				type: "checkbox",
+				fixed: "left"
+			}, {
+				field: "id",
+				width: 80,
+				title: "ID",
+				sort: !0
+			}, {
+				field: "loginname",
+				title: "登录名"
+			}, {
+				field: "telphone",
+				title: "手机"
+			}, {
+				field: "email",
+				title: "邮箱"
+			}, {
+				field: "role",
+				title: "角色"
+			}, {
+				field: "jointime",
+				title: "加入时间",
+				sort: !0
+			}, {
+				field: "check",
+				title: "审核状态",
+				templet: "#buttonTpl",
+				minWidth: 80,
+				align: "center"
+			}, {
+				title: "操作",
+				width: 150,
+				align: "center",
+				fixed: "right",
+				toolbar: "#table-useradmin-admin"
+			}]
+		],
+		text: "对不起，加载出现异常！"
+	}), i.on("tool(LAY-adcontent-back-manage)", function(e) {
+		e.data;
+		if ("del" === e.event) layer.prompt({
+			formType: 1,
+			title: "敏感操作，请验证口令"
+		}, function(t, i) {
+			layer.close(i), layer.confirm("确定删除此管理员？", function(t) {
+				console.log(e), e.del(), layer.close(t)
+			})
+		});
+		else if ("edit" === e.event) {
+			t(e.tr);
+			layer.open({
+				type: 2,
+				title: "编辑管理员",
+				content: "../../views/user/administrators/adminform.html",
+				area: ["420px", "420px"],
+				btn: ["确定", "取消"],
+				yes: function(e, t) {
+					var l = window["layui-layer-iframe" + e],
+						r = "LAY-adcontent-back-submit",
+						n = t.find("iframe").contents().find("#" + r);
+					l.layui.form.on("submit(" + r + ")", function(t) {
+						t.field;
+						i.reload("LAY-adcontent-front-submit"), layer.close(e)
+					}), n.trigger("click")
+				},
+				success: function(e, t) {}
+			})
+		}
+	}), i.render({
+		elem: "#LAY-adcontent-back-role",
+		url: layui.setter.base + "json/useradmin/role.js",
+		cols: [
+			[{
+				type: "checkbox",
+				fixed: "left"
+			}, {
+				field: "id",
+				width: 80,
+				title: "ID",
+				sort: !0
+			}, {
+				field: "rolename",
+				title: "角色名"
+			}, {
+				field: "limits",
+				title: "拥有权限"
+			}, {
+				field: "descr",
+				title: "具体描述"
+			}, {
+				title: "操作",
+				width: 150,
+				align: "center",
+				fixed: "right",
+				toolbar: "#table-useradmin-admin"
+			}]
+		],
+		text: "对不起，加载出现异常！"
+	}), i.on("tool(LAY-adcontent-back-role)", function(e) {
+		e.data;
+		if ("del" === e.event) layer.confirm("确定删除此角色？", function(t) {
+			e.del(), layer.close(t)
+		});
+		else if ("edit" === e.event) {
+			t(e.tr);
+			layer.open({
+				type: 2,
+				title: "编辑角色",
+				content: "../../views/user/administrators/roleform.html",
+				area: ["500px", "480px"],
+				btn: ["确定", "取消"],
+				yes: function(e, t) {
+					var l = window["layui-layer-iframe" + e],
+						r = t.find("iframe").contents().find("#LAY-adcontent-role-submit");
+					l.layui.form.on("submit(LAY-adcontent-role-submit)", function(t) {
+						t.field;
+						i.reload("LAY-adcontent-back-role"), layer.close(e)
+					}), r.trigger("click")
+				},
+				success: function(e, t) {}
+			})
+		}
+	}), e("adcontent", {})
+});

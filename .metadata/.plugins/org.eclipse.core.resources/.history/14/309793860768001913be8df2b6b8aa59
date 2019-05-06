@@ -1,0 +1,56 @@
+package com.lottery.service.admin;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.tomcat.util.http.mapper.Mapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.lottery.mapper.admin.UserMapper;
+import com.lottery.model.ad.AdUser;
+
+ 
+@Service
+@Transactional
+public class UserService{
+	@Resource
+	public UserMapper userMapper;
+
+	public int updateAccountByName(String userName) {
+		// TODO Auto-generated method stub
+		//int count = UserMapper.updateAccountByName(userName);
+        return 1;
+	}
+
+    public List<AdUser> findAll(){
+    	return UserMapper.findAll();
+    }
+    
+    public int updateByUserId(AdUser adUser){
+    	return UserMapper.updateByUserId(adUser);
+    }
+    public AdUser findByUserName(String userName){
+    	return UserMapper.findByUserName(userName);
+    }
+    
+    public AdUser find(String userName){
+    	return UserMapper.findByUserName(userName);
+    }
+    
+    public int delByUserName(String userName){
+    	return UserMapper.delByUserName(userName);
+    }
+    
+    public int insert(AdUser adUser){
+    	return UserMapper.insert(adUser);
+    }
+
+    public int update(AdUser adUser){
+    	return UserMapper.update(adUser);
+    }
+    
+    public List<AdUser> findByParam(Map<String,Object> paramMap){
+    	return UserMapper.findByParam(paramMap);
+    }
+}

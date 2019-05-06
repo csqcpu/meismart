@@ -1,0 +1,102 @@
+package com.lottery.controller.admin;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.catalina.util.RequestUtil;
+import org.apache.log4j.Logger;
+import org.apache.tomcat.util.http.mapper.Mapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.lottery.model.ad.AdOnline;
+import com.lottery.model.ad.AdPlayHis;
+import com.lottery.model.ad.AdUser;
+import com.lottery.model.ad.PureUser;
+import com.lottery.redis.MybatisRedisCache;
+import com.lottery.schedule.ad.InsertAdPlayHisschedule;
+import com.lottery.service.ad.AdFeeService;
+import com.lottery.service.ad.AdOnlineService;
+import com.lottery.service.ad.AdPlayHisService;
+import com.lottery.service.ad.AdUserService;
+import com.lottery.util.AES;
+import com.lottery.util.RequestUtils;
+
+import redis.clients.jedis.Transaction;
+
+@Controller
+public class UserController implements ApplicationContextAware {
+	private static Logger logger = Logger.getLogger(UserController.class);
+	ExecutorService executor = Executors.newFixedThreadPool(1); // 1个线程池并发数
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private AdPlayHisService adPlayHisService;
+	@Autowired
+	MybatisRedisCache mybatisRedisCache;
+	ApplicationContext applicationContext;
+	Semaphore feeSemaphore = new Semaphore(1, true);
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/admin/userlogin")
+	public void userlogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		String username = requestJson.getString("username");
+		String password = requestJson.getString("password");
+		AdUser adUser = adUserService.findByUserName(username);
+		try {
+			password = AES.aesDecrypt(password, AES.complementKey(adUser.getPassword(), 16));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (adUser == null) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", -1);
+			jsonObject.put("msg", "username=" + username + " not found");
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+			return;
+		}
+		String token = "0123456789012345";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("msg", "登入成功");
+		JSONObject jsondata = new JSONObject();
+		jsondata.put("token", token);
+		jsonObject.put("data", jsondata);
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+		//用户登录信息存放在redis
+		PureUser pureUser = JSONObject.toJavaObject((JSONObject)JSONObject.toJSON(adUser),PureUser.class);
+		mybatisRedisCache.putObject(token+":pureuser", pureUser);
+	}
+
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+}

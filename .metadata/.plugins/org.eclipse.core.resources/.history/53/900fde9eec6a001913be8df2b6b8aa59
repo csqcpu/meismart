@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.sys.SysRolePermMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.sys.SysRolePerm">
+    <result column="role_id" jdbcType="INTEGER" property="role_id" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="limit" jdbcType="VARCHAR" property="limit" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  <insert id="insert" parameterType="com.lottery.model.sys.SysRolePerm">
+    insert into sysroleperm (role_id, path, method, 
+      limit, description)
+    values (#{role_id,jdbcType=INTEGER}, #{path,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+      #{limit,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.sys.SysRolePerm">
+    insert into sysroleperm
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="role_id != null">
+        role_id,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="limit != null">
+        limit,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="role_id != null">
+        #{role_id,jdbcType=INTEGER},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="limit != null">
+        #{limit,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findByRoleId" parameterType="Map" resultMap="BaseResultMap">
+    select * from sysroleperm where role_id=#{roleId,jdbcType=VARCHAR} 
+  </select>
+</mapper>

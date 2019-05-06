@@ -1,0 +1,51 @@
+package com.lottery.service.ad;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+ 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.lottery.mapper.ad.AdContentMapper;
+import com.lottery.model.ad.AdContent;
+
+ 
+@Service
+@Transactional
+public class AdContentService{
+	@Resource
+	public AdContentMapper AdContentMapper;
+
+	public int updateAccountByName(String userName) {
+		// TODO Auto-generated method stub
+		//int count = AdContentMapper.updateAccountByName(userName);
+        return 1;
+	}
+
+    public List<AdContent> findAll(){
+    	return AdContentMapper.findAll();
+    }
+    
+    public int updateByUserId(AdContent AdContent){
+    	return AdContentMapper.updateByUserId(AdContent);
+    }
+    public AdContent findByUserName(String userName){
+    	return AdContentMapper.findByUserName(userName);
+    }
+    
+    public AdContent find(String userName){
+    	return AdContentMapper.findByUserName(userName);
+    }
+    
+    public int delByUserName(String userName){
+    	return AdContentMapper.delByUserName(userName);
+    }
+    
+    public int insert(AdContent AdContent){
+    	return AdContentMapper.insert(AdContent);
+    }
+
+    public int update(AdContent AdContent){
+    	return AdContentMapper.update(AdContent);
+    }
+}

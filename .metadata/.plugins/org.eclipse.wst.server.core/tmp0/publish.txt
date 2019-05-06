@@ -1,3 +1,2 @@
 #Tomcat publish data
-#Wed Apr 10 16:51:28 CST 2019
-org.eclipse.jst.jee.server\:/binary\:F\:\\meismart\\mei-smart\\WebApp\\WEB-INF\\lib\\spring-web-4.2.4.RELEASE.jar=WEB-INF/lib/spring-web-4.2.4.RELEASE.jar
+#Mon May 06 08:56:30 CST 2019

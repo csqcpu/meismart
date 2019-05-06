@@ -1,0 +1,9 @@
+package com.lottery.mapper.sys;
+
+import com.lottery.model.sys.SysRole;
+
+public interface SysRoleMapper {
+    int insert(SysRole record);
+
+    int insertSelective(SysRole record);
+}

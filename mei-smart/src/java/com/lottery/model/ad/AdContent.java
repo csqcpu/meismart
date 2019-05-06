@@ -3,6 +3,9 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.JSONObject;
+import com.lottery.model.auth.Perm;
+
 public class AdContent implements Serializable {
     private Integer content_id;
 
@@ -24,11 +27,13 @@ public class AdContent implements Serializable {
 
     private String checkuser;
 
-    private Byte status;
+    private Integer status;
 
     private String submitmsg;
 
     private String responsemsg;
+    
+    private JSONObject perm;
 
     public Integer getContent_id() {
         return content_id;
@@ -110,11 +115,11 @@ public class AdContent implements Serializable {
         this.checkuser = checkuser == null ? null : checkuser.trim();
     }
 
-    public Byte getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -132,5 +137,13 @@ public class AdContent implements Serializable {
 
     public void setResponsemsg(String responsemsg) {
         this.responsemsg = responsemsg == null ? null : responsemsg.trim();
+    }
+    
+    public JSONObject getPerm() {
+        return perm;
+    }
+
+    public void setPerm(JSONObject perm) {
+        this.perm = perm;
     }
 }

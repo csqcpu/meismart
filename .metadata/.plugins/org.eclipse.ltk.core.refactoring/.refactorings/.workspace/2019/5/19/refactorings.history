@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="删除资源“Servers/Tomcat v7.0 Server at localhost (3)-config”" deleteContents="false" description="删除资源“Servers/Tomcat v7.0 Server at localhost (3)-config”" element1="/Servers/Tomcat v7.0 Server at localhost (3)-config" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1557018317089"/>&#x0A;<refactoring comment="删除资源“Servers/Tomcat v7.0 Server at localhost-config”" deleteContents="false" description="删除资源“Servers/Tomcat v7.0 Server at localhost-config”" element1="/Servers/Tomcat v7.0 Server at localhost-config" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1557104230383"/>
+</session>

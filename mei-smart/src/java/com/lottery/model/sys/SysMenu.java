@@ -1,0 +1,55 @@
+package com.lottery.model.sys;
+
+import java.io.Serializable;
+
+public class SysMenu implements Serializable {
+    private Integer menu_id;
+
+    private String name;
+
+    private String href;
+
+    private Integer pid;
+
+    private String group;
+
+    public Integer getId() {
+        return menu_id;
+    }
+
+    public void setId(Integer menu_id) {
+        this.menu_id = menu_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href == null ? null : href.trim();
+    }
+
+    public Integer getPid() {
+        return pid;
+    }
+
+    public void setPid(Integer pid) {
+        this.pid = pid;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group == null ? null : group.trim();
+    }
+}

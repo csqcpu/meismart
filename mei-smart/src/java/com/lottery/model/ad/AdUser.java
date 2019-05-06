@@ -3,10 +3,15 @@ package com.lottery.model.ad;
 import java.io.Serializable;
 import java.util.Date;
 
-public class AdUser implements Serializable {
+import com.alibaba.fastjson.JSONObject;
+import com.lottery.model.auth.Perm;
+
+public class AdUser  implements Serializable {
     private String username;
 
     private String password;
+    
+    private Integer role_id;    
 
     private String smscode;
 
@@ -30,6 +35,14 @@ public class AdUser implements Serializable {
 
     private String createuser;
 
+    private Date checkdt;
+
+    private String checkuser;
+
+    private Integer status;
+    
+    public JSONObject perm;
+
     public String getUsername() {
         return username;
     }
@@ -44,6 +57,14 @@ public class AdUser implements Serializable {
 
     public void setPassword(String password) {
         this.password = password == null ? null : password.trim();
+    }
+    
+    public Integer getRole_id() {
+        return role_id;
+    }
+
+    public void setRole_id(Integer role_id) {
+        this.role_id = role_id;
     }
 
     public String getSmscode() {
@@ -132,5 +153,29 @@ public class AdUser implements Serializable {
 
     public void setCreateuser(String createuser) {
         this.createuser = createuser == null ? null : createuser.trim();
+    }
+
+    public Date getCheckdt() {
+        return checkdt;
+    }
+
+    public void setCheckdt(Date checkdt) {
+        this.checkdt = checkdt;
+    }
+
+    public String getCheckuser() {
+        return checkuser;
+    }
+
+    public void setCheckuser(String checkuser) {
+        this.checkuser = checkuser == null ? null : checkuser.trim();
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

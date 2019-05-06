@@ -1,0 +1,48 @@
+package com.lottery.service.ad;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+ 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.lottery.mapper.ad.AdContentMapper;
+import com.lottery.model.ad.AdContent;
+
+ 
+@Service
+@Transactional
+public class AdContentService{
+	@Resource
+	public AdContentMapper AdContentMapper;
+
+   
+	public int deleteByPrimaryKey(Integer content_id){
+    	return AdContentMapper.deleteByPrimaryKey(content_id);
+    }
+
+	public int insert(AdContent record){
+    	return AdContentMapper.insert(record);
+    }
+
+	public int insertSelective(AdContent record){
+    	return AdContentMapper.insertSelective(record);
+    }
+
+
+	public AdContent selectByPrimaryKey(Integer content_id){
+    	return AdContentMapper.selectByPrimaryKey(content_id);
+    }
+
+	public int updateByPrimaryKeySelective(AdContent record){
+    	return AdContentMapper.updateByPrimaryKeySelective(record);
+    }
+
+	public int updateByPrimaryKey(AdContent record){
+    	return AdContentMapper.updateByPrimaryKey(record);
+	}
+    	
+    public List<AdContent> findAll(){
+        	return AdContentMapper.findAll();    	
+    }
+}

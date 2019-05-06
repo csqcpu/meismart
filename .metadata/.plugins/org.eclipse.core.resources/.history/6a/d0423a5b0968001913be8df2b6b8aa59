@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.admin.UserMapper">
+	<resultMap id="BaseResultMap" type="com.lottery.model.admin.sysadmin">
+		<id column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="role_id" jdbcType="INTEGER" property="role_id" />
+		<result column="smscode" jdbcType="VARCHAR" property="smscode" />
+		<result column="corp" jdbcType="VARCHAR" property="corp" />
+		<result column="addr" jdbcType="VARCHAR" property="addr" />
+		<result column="postcode" jdbcType="VARCHAR" property="postcode" />
+		<result column="contact" jdbcType="VARCHAR" property="contact" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+		<result column="account" jdbcType="INTEGER" property="account" />
+		<result column="pay_id" jdbcType="INTEGER" property="pay_id" />
+		<result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
+		<result column="createuser" jdbcType="VARCHAR" property="createuser" />
+	</resultMap>
+	<!--  <cache type="com.lottery.redis.MybatisRedisCache" />-->
+	<sql id="Base_Column_List">
+		username, password, role_id,smscode, corp, addr, postcode, contact,
+		mobile, telephone,
+		account,
+		pay_id, createdt, createuser
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sysadmin
+		where username = #{username,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from sysadmin
+		where username = #{username,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.lottery.model.admin.sysadmin">
+		insert into sysadmin (username,
+		password, smscode,
+		corp, addr, postcode,
+		contact, mobile, telephone,
+		account, pay_id, createdt,
+		createuser)
+		values
+		(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		#{smscode,jdbcType=VARCHAR},
+		#{corp,jdbcType=VARCHAR},
+		#{addr,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR},
+		#{contact,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+		#{telephone,jdbcType=VARCHAR},
+		#{account,jdbcType=INTEGER},
+		#{pay_id,jdbcType=INTEGER}, #{createdt,jdbcType=TIMESTAMP},
+		#{createuser,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.lottery.model.admin.sysadmin">
+		insert into sysadmin
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="username != null">
+				username,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="smscode != null">
+				smscode,
+			</if>
+			<if test="corp != null">
+				corp,
+			</if>
+			<if test="addr != null">
+				addr,
+			</if>
+			<if test="postcode != null">
+				postcode,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="mobile != null">
+				mobile,
+			</if>
+			<if test="telephone != null">
+				telephone,
+			</if>
+			<if test="account != null">
+				account,
+			</if>
+			<if test="pay_id != null">
+				pay_id,
+			</if>
+			<if test="createdt != null">
+				createdt,
+			</if>
+			<if test="createuser != null">
+				createuser,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="smscode != null">
+				#{smscode,jdbcType=VARCHAR},
+			</if>
+			<if test="corp != null">
+				#{corp,jdbcType=VARCHAR},
+			</if>
+			<if test="addr != null">
+				#{addr,jdbcType=VARCHAR},
+			</if>
+			<if test="postcode != null">
+				#{postcode,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				#{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="account != null">
+				#{account,jdbcType=INTEGER},
+			</if>
+			<if test="pay_id != null">
+				#{pay_id,jdbcType=INTEGER},
+			</if>
+			<if test="createdt != null">
+				#{createdt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createuser != null">
+				#{createuser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.admin.sysadmin">
+		update sysadmin
+		<set>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="smscode != null">
+				smscode = #{smscode,jdbcType=VARCHAR},
+			</if>
+			<if test="corp != null">
+				corp = #{corp,jdbcType=VARCHAR},
+			</if>
+			<if test="addr != null">
+				addr = #{addr,jdbcType=VARCHAR},
+			</if>
+			<if test="postcode != null">
+				postcode = #{postcode,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				telephone = #{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="account != null">
+				account = #{account,jdbcType=INTEGER},
+			</if>
+			<if test="pay_id != null">
+				pay_id = #{pay_id,jdbcType=INTEGER},
+			</if>
+			<if test="createdt != null">
+				createdt = #{createdt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createuser != null">
+				createuser = #{createuser,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where username = #{username,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.lottery.model.admin.sysadmin">
+		update sysadmin
+		set
+		password = #{password,jdbcType=VARCHAR},
+		smscode =
+		#{smscode,jdbcType=VARCHAR},
+		corp = #{corp,jdbcType=VARCHAR},
+		addr =
+		#{addr,jdbcType=VARCHAR},
+		postcode = #{postcode,jdbcType=VARCHAR},
+		contact = #{contact,jdbcType=VARCHAR},
+		mobile =
+		#{mobile,jdbcType=VARCHAR},
+		telephone = #{telephone,jdbcType=VARCHAR},
+		account = #{account,jdbcType=INTEGER},
+		pay_id =
+		#{pay_id,jdbcType=INTEGER},
+		createdt = #{createdt,jdbcType=TIMESTAMP},
+		createuser = #{createuser,jdbcType=VARCHAR}
+		where username =
+		#{username,jdbcType=VARCHAR}
+	</update>
+	<select id="findAll" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select * from sysadmin
+	</select>
+	
+	<update id="updateByUserId" parameterType="com.lottery.model.admin.sysadmin">
+		update sysadmin set
+		account = #{account,jdbcType=INTEGER} where username =
+		#{username,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findByUserName" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select * from sysadmin where username=#{username,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="delByUserName" parameterType="java.lang.String">
+		delete from sysadmin where username=#{username,jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="update" parameterType="com.lottery.model.admin.sysadmin">
+		update sysadmin
+		set
+		password = #{password,jdbcType=VARCHAR},
+		smscode =
+		#{smscode,jdbcType=VARCHAR},
+		corp = #{corp,jdbcType=VARCHAR},
+		addr =
+		#{addr,jdbcType=VARCHAR},
+		postcode = #{postcode,jdbcType=VARCHAR},
+		contact = #{contact,jdbcType=VARCHAR},
+		mobile =
+		#{mobile,jdbcType=VARCHAR},
+		telephone = #{telephone,jdbcType=VARCHAR},
+		account = #{account,jdbcType=INTEGER},
+		pay_id =
+		#{pay_id,jdbcType=INTEGER},
+		createdt = #{createdt,jdbcType=TIMESTAMP},
+		createuser = #{createuser,jdbcType=VARCHAR}
+		where username =
+		#{username,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findByParam" parameterType="Map"
+		resultMap="BaseResultMap">
+		select * from sysadmin 		
+		<where>
+		     1=1
+			<if test="username != null">
+				and username like '%' #{username,jdbcType=VARCHAR} '%'
+			</if>		     
+			<if test="password != null">
+				and password like '%' #{password,jdbcType=VARCHAR}'%'
+			</if>
+			<if test="smscode != null">
+				and smscode = #{smscode,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="corp != null">
+				and corp like '%' #{corp,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="addr != null">
+				and addr like '%' #{addr,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="postcode != null">
+				and postcode like '%' {postcode,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="contact != null">
+				and contact like '%' #{contact,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="mobile != null">
+				and mobile like '%' #{mobile,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="telephone != null">
+				and telephone like '%' #{telephone,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="account != null">
+				and account like '%' #{account,jdbcType=INTEGER} '%'
+			</if>
+			<if test="pay_id != null">
+				and pay_id like '%' #{pay_id,jdbcType=INTEGER} '%'
+			</if>
+			<if test="createdt != null">
+				and createdt like '%' #{createdt,jdbcType=TIMESTAMP} '%'
+			</if>
+			<if test="createuser != null">
+				and createuser like '%' #{createuser,jdbcType=VARCHAR} '%'
+			</if>
+		</where>
+	</select>
+</mapper>

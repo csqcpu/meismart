@@ -1,0 +1,10 @@
+function formatReq(JsonRequest){
+	var dataObject={}
+	dataObject['data']=JsonRequest.data
+	dataObject['timestamp']=JsonRequest.timestamp
+	var encryptdata=encrypt(JSON.stringify(dataObject),layui.data(layui.setter.tableName).password);
+	var output={}
+	output['token']=layui.data(layui.setter.tableName).token
+	output['data']=encryptdata
+	return JSON.stringify(output)
+}

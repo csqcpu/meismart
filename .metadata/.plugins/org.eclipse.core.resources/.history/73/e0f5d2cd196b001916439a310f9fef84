@@ -1,0 +1,9 @@
+function formatReq(JsonRequest){
+	var dataObject={}
+	dataObject['data']=dataArray
+	dataObject['timestamp']=data(setter.tableName).timestamp
+	var output={}
+	output['token']="1234567890123456"
+	output['data']=dataArray
+	return JSON.stringify(output)
+}

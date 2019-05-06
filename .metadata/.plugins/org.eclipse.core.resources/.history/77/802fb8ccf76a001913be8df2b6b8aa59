@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.ad.AdContentMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.ad.AdContent">
+    <id column="content_id" jdbcType="INTEGER" property="content_id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="type_id" jdbcType="INTEGER" property="type_id" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
+    <result column="createuser" jdbcType="VARCHAR" property="createuser" />
+    <result column="checkdt" jdbcType="TIMESTAMP" property="checkdt" />
+    <result column="checkuser" jdbcType="VARCHAR" property="checkuser" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="submitmsg" jdbcType="VARCHAR" property="submitmsg" />
+    <result column="responsemsg" jdbcType="VARCHAR" property="responsemsg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    content_id, title, type_id, content, url, description, createdt, createuser, checkdt, 
+    checkuser, status, submitmsg, responsemsg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from adcontent
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from adcontent
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.model.ad.AdContent">
+    insert into adcontent (content_id, title, type_id, 
+      content, url, description, 
+      createdt, createuser, checkdt, 
+      checkuser, status, submitmsg, 
+      responsemsg)
+    values (#{content_id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{type_id,jdbcType=INTEGER}, 
+      #{content,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{createdt,jdbcType=TIMESTAMP}, #{createuser,jdbcType=VARCHAR}, #{checkdt,jdbcType=TIMESTAMP}, 
+      #{checkuser,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{submitmsg,jdbcType=VARCHAR}, 
+      #{responsemsg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.model.ad.AdContent">
+    insert into adcontent
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="content_id != null">
+        content_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="type_id != null">
+        type_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createdt != null">
+        createdt,
+      </if>
+      <if test="createuser != null">
+        createuser,
+      </if>
+      <if test="checkdt != null">
+        checkdt,
+      </if>
+      <if test="checkuser != null">
+        checkuser,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="submitmsg != null">
+        submitmsg,
+      </if>
+      <if test="responsemsg != null">
+        responsemsg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="content_id != null">
+        #{content_id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="type_id != null">
+        #{type_id,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createdt != null">
+        #{createdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null">
+        #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkdt != null">
+        #{checkdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkuser != null">
+        #{checkuser,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="submitmsg != null">
+        #{submitmsg,jdbcType=VARCHAR},
+      </if>
+      <if test="responsemsg != null">
+        #{responsemsg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.model.ad.AdContent">
+    update adcontent
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="type_id != null">
+        type_id = #{type_id,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createdt != null">
+        createdt = #{createdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null">
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkdt != null">
+        checkdt = #{checkdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkuser != null">
+        checkuser = #{checkuser,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="submitmsg != null">
+        submitmsg = #{submitmsg,jdbcType=VARCHAR},
+      </if>
+      <if test="responsemsg != null">
+        responsemsg = #{responsemsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.model.ad.AdContent">
+    update adcontent
+    set title = #{title,jdbcType=VARCHAR},
+      type_id = #{type_id,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      createdt = #{createdt,jdbcType=TIMESTAMP},
+      createuser = #{createuser,jdbcType=VARCHAR},
+      checkdt = #{checkdt,jdbcType=TIMESTAMP},
+      checkuser = #{checkuser,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      submitmsg = #{submitmsg,jdbcType=VARCHAR},
+      responsemsg = #{responsemsg,jdbcType=VARCHAR}
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="findAll" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * 
+    from adcontent
+    	<where>
+		     1=1
+			<if test="username != null">
+				and username like '%' #{username,jdbcType=VARCHAR} '%'
+			</if>		     
+			<if test="password != null">
+				and password like '%' #{password,jdbcType=VARCHAR}'%'
+			</if>
+			<if test="smscode != null">
+				and smscode = #{smscode,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="corp != null">
+				and corp like '%' #{corp,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="addr != null">
+				and addr like '%' #{addr,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="postcode != null">
+				and postcode like '%' {postcode,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="contact != null">
+				and contact like '%' #{contact,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="mobile != null">
+				and mobile like '%' #{mobile,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="telephone != null">
+				and telephone like '%' #{telephone,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="account != null">
+				and account like '%' #{account,jdbcType=INTEGER} '%'
+			</if>
+			<if test="pay_id != null">
+				and pay_id like '%' #{pay_id,jdbcType=INTEGER} '%'
+			</if>
+			<if test="createdt != null">
+				and createdt like '%' #{createdt,jdbcType=TIMESTAMP} '%'
+			</if>
+			<if test="createuser != null">
+				and createuser like '%' #{createuser,jdbcType=VARCHAR} '%'
+			</if>
+			<if test="perm != null">
+				and username = #{perm,jdbcType=VARCHAR}
+			</if>
+		</where>
+   </select>
+   
+    <update id="update" parameterType="com.lottery.model.ad.AdContent">
+    update adcontent
+    set title = #{title,jdbcType=VARCHAR},
+      type_id = #{type_id,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      createdt = #{createdt,jdbcType=TIMESTAMP},
+      createuser = #{createuser,jdbcType=VARCHAR},
+      checkdt = #{checkdt,jdbcType=TIMESTAMP},
+      checkuser = #{checkuser,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      submitmsg = #{submitmsg,jdbcType=VARCHAR},
+      responsemsg = #{responsemsg,jdbcType=VARCHAR}
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </update>
+  
+  <delete id="del" parameterType="com.lottery.model.ad.AdContent">
+    delete adcontent 
+    where content_id = #{content_id,jdbcType=INTEGER}
+  </delete>
+</mapper>

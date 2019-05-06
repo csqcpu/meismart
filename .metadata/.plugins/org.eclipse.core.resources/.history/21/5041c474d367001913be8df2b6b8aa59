@@ -1,0 +1,155 @@
+package com.lottery.controller.sys;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.catalina.util.RequestUtil;
+import org.apache.log4j.Logger;
+import org.apache.tomcat.util.http.mapper.Mapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.lottery.model.ad.AdOnline;
+import com.lottery.model.ad.AdPlayHis;
+import com.lottery.model.ad.PureUser;
+import com.lottery.model.ad.AdContent;
+import com.lottery.redis.MybatisRedisCache;
+import com.lottery.schedule.ad.InsertAdPlayHisschedule;
+import com.lottery.service.ad.AdContentService;
+import com.lottery.service.ad.AdFeeService;
+import com.lottery.service.ad.AdOnlineService;
+import com.lottery.service.ad.AdPlayHisService;
+import com.lottery.service.ad.AdContentService;
+import com.lottery.util.AES;
+import com.lottery.util.RequestUtils;
+
+import redis.clients.jedis.Transaction;
+
+@Controller
+public class SystemController implements ApplicationContextAware {
+	private static Logger logger = Logger.getLogger(SystemController.class);
+	ExecutorService executor = Executors.newFixedThreadPool(1); // 1个线程池并发数
+	@Autowired
+	private AdContentService adContentService;
+	@Autowired
+	private AdContentService AdContentService;
+	@Autowired
+	private AdPlayHisService adPlayHisService;
+	@Autowired
+	MybatisRedisCache mybatisRedisCache;
+	ApplicationContext applicationContext;
+	Semaphore feeSemaphore = new Semaphore(1, true);
+
+//	@ResponseBody
+//	@RequestMapping(value = "/rest/sys/menu")
+//	public void addcontent(HttpServletRequest request, HttpServletResponse response) {
+//		JSONObject requestJson;
+//		try {
+//			requestJson = RequestUtils.getRequestJsonObject(request);
+//			String token = requestJson.getString("token");
+//			PureUser pureUser = (PureUser) mybatisRedisCache.getObject(token+":pureuser");
+//			AdContent AdContent = JSONObject.toJavaObject(jsonRecord, AdContent.class);
+//			int insertCount = AdContentService.insert(AdContent);
+//			JSONObject jsonObject = new JSONObject();
+//			jsonObject.put("code", 0);
+//			jsonObject.put("msg", "成功");
+//			jsonObject.put("count", 0);
+//			jsonObject.put("data", new ArrayList());
+//			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+//			response.setContentType("text/json; charset=UTF-8");
+//		} catch (IOException e) {
+//
+//		} finally {
+//
+//		}
+//	}
+	
+//	@ResponseBody
+//	@RequestMapping(value = "/rest/ad/updatecontent")
+//	public void updatecontent(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		JSONObject requestJson;
+//		JSONObject jsonObject = new JSONObject();;
+//		try {
+//			requestJson = RequestUtils.getRequestJsonObject(request);
+//			JSONArray dataArray = requestJson.getJSONArray("data");
+//			JSONObject jsonRecord = dataArray.getJSONObject(0);
+//			AdContent AdContent = JSONObject.toJavaObject(jsonRecord, AdContent.class);
+//			int updateCount = AdContentService.update(AdContent);
+//			jsonObject.put("code", 0);
+//			jsonObject.put("msg", "成功");
+//			jsonObject.put("count", 0);
+//			jsonObject.put("data", new ArrayList());
+//		} catch (IOException e) {
+//			jsonObject.put("code", 0);
+//			jsonObject.put("msg", "成功");
+//			jsonObject.put("count", 0);
+//			jsonObject.put("data", new ArrayList());
+//		} finally {
+//			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+//			response.setContentType("text/json; charset=UTF-8");
+//		}
+//	}
+//
+//	@ResponseBody
+//	@RequestMapping(value = "/rest/ad/getcontent")
+//	public void getcontent(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+//		int page = requestJson.getInteger("page");
+//		int limit = requestJson.getInteger("limit");
+//		List<AdContent> AdContentList = adContentService.findAll();
+//
+//		JSONObject jsonObject = new JSONObject();
+//		jsonObject.put("code", 0);
+//		jsonObject.put("msg", "成功");
+//		jsonObject.put("count", AdContentList.size());
+//		jsonObject.put("data", AdContentList);
+//		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+//		response.setContentType("text/json; charset=UTF-8");
+//	}
+//
+//	@ResponseBody
+//	@RequestMapping(value = "/rest/ad/delcontent")
+//	public void delcontent(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+//		AdContent AdContent = JSONObject.toJavaObject(requestJson, AdContent.class);
+//		int delCount = AdContentService.delByContentId(AdContent.getContent_id());
+//		if (delCount != 1) {
+//
+//		}
+//		JSONObject jsonObject = new JSONObject();
+//		jsonObject.put("code", 0);
+//		jsonObject.put("msg", "成功");
+//		jsonObject.put("count", delCount);
+//		jsonObject.put("data", new ArrayList());
+//		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+//		response.setContentType("text/json; charset=UTF-8");
+//	}
+
+
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+}

@@ -1,0 +1,9 @@
+package com.lottery.mapper.ad;
+
+import com.lottery.model.ad.SysRolePerm;
+
+public interface SysRolePermMapper {
+    int insert(SysRolePerm record);
+
+    int insertSelective(SysRolePerm record);
+}

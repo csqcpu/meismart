@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 网站用户</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+  <div class="layui-fluid">
+    <div class="layui-card">
+      <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+              <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+              <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">公司名称</label>
+            <div class="layui-input-block">
+              <input type="text" name="corp" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">联系人</label>
+            <div class="layui-input-block">
+              <input type="text" name="contact" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-aduser-front-search">
+              <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="layui-card-body">
+        <div style="padding-bottom: 10px;">
+          <button class="layui-btn layuiadmin-btn-useradmin" data-type="batchdel">删除</button>
+          <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加</button>
+        </div>
+        
+        <table id="LAY-aduser-manage" lay-filter="LAY-aduser-manage"></table>
+        <script type="text/html" id="imgTpl"> 
+          <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
+        </script> 
+        <script type="text/html" id="table-useradmin-webuser">
+          {{#  if(d.perm.eidtenable){ }}
+          <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+          {{#  } }}
+          {{#  if(d.perm.delenable){ }}
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+          {{#  } }}
+          {{#  if(d.perm.commitenable){ }}
+          <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="submitcheck"><i class="layui-icon layui-icon-right"></i>提交审核</a>
+          {{#  } }}
+          {{#  if(d.perm.checkenable){ }}
+          <a class="layui-btn layui-btn layui-btn-xs" lay-event="check"><i class="layui-icon layui-icon-ok"></i>审核通过</a>
+          <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="check"><i class="layui-icon layui-icon-close"></i>审核不通过</a>
+          {{#  } }}
+        </script>
+        <script type="text/html" id="buttonTpl">
+          {{#  if(d.status == 3){ }}
+            正常
+          {{#  } else if(d.status == 2){ }}
+            未通过
+          {{#  } else if(d.status == 1){ }}
+            审核中
+          {{#  } else{ }}
+           待审核
+          {{#  } }}
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="../../layuiadmin/util/jquery.min.js"></script>
+  <script src="../../layuiadmin/layui/layui.js"></script> 
+  <script src="../../layuiadmin/util/aes.js"></script>  
+  <script>
+  layui.config({
+    base: '../../layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'aduser', 'table'], function(){
+    var $ = layui.$
+    ,form = layui.form
+    ,table = layui.table
+    ,data = layui.data
+    ,setter=layui.setter;
+    
+    //监听搜索
+    form.on('submit(LAY-aduser-front-search)', function(data){
+      var field = data.field;
+      
+      //执行重载
+      table.reload('LAY-aduser-manage', {
+        where: field
+      });
+    });
+  
+    //事件
+    var active = {
+      batchdel: function(){
+        var checkStatus = table.checkStatus('LAY-aduser-manage')
+        ,checkData = checkStatus.data; //得到选中的数据
+
+        if(checkData.length === 0){
+          return layer.msg('请选择数据');
+        }
+        
+        layer.prompt({
+          formType: 1
+          ,title: '敏感操作，请验证密码'
+        }, function(value, index){
+          layer.close(index);
+          if(value!=data(setter.tableName).password){
+        	layer.msg('密码错误！', {
+                offset: '15px'
+                ,icon: 1
+                ,time: 1000
+              })
+        	return
+        }
+          layer.confirm('确定删除吗？', function(index) {
+          layui.admin.req({
+		                type: 'POST',
+		                url: layui.setter.base + "../../rest/ad/deluser",
+		                contentType: 'application/json',
+		                data: function(){
+		                	var output={}
+		                	//output['data']=[]
+		                	output['data']=checkData
+		                	req = formatReq(output)
+		                	return req
+		                }(),
+		                dataType: "json",
+		                success: function(data) {
+		                    if(data.code==0){
+		                        //登入成功的提示与跳转
+		                        layer.msg('添加用户成功', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                          //location.href = '../index.html'; //后台主页
+		                        });
+		                    }
+		                    else{
+		                        layer.msg('添加用户失败:'+data.msg, {
+			                          offset: '15px'
+			                          ,icon: 1
+			                          ,time: 1000
+			                        }, function(){
+			                        //  location.href = '../index.html'; //后台主页
+			                        });
+		                    }
+		                },
+		                error: function(e, t) {
+	                        layer.msg('添加用户失败：', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                       //   location.href = '../index.html'; //后台主页
+		                        });
+		                }
+		            })
+            table.reload('LAY-aduser-manage');
+            layer.msg('已删除');
+          });
+        });
+      }
+      ,add: function(){
+        layer.open({
+          type: 2
+          ,title: '添加用户'
+          ,content: 'userform.html'
+          ,maxmin: true
+          ,area: ['500px', '450px']
+          ,btn: ['确定', '取消']
+		,success: function(layero, index) {
+		    var body = layer.getChildFrame('body', index);
+		    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+		    iframeWin.document.getElementsByName('username')[0].value=e.data.username||''
+		    iframeWin.document.getElementsByName('corp')[0].value=e.data.corp||''
+		    iframeWin.document.getElementsByName('contact')[0].value=e.data.contact||''
+		    iframeWin.document.getElementsByName('mobile')[0].value=e.data.mobile||''
+		    iframeWin.document.getElementsByName('telephone')[0].value=e.data.telephone||''
+		    iframeWin.document.getElementsByName('addr')[0].value=e.data.addr||''
+		    iframeWin.document.getElementsByName('postcode')[0].value=e.data.postcode||''
+		    iframeWin.document.getElementsByName('account')[0].value=e.data.account||''
+		    //body.find(".phone").val('12345678901');
+			}
+          ,yes: function(index, layero){
+            var iframeWindow = window['layui-layer-iframe'+ index]
+            ,submitID = 'LAY-aduser-front-submit'
+            ,submit = layero.find('iframe').contents().find('#'+ submitID);
+
+            //监听提交
+            iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+              var field = data.field; //获取提交的字段
+              
+              //提交 Ajax 成功后，静态更新表格中的数据
+              				 $.ajax({
+		                type: 'POST',
+		                url: layui.setter.base + "../../rest/ad/adduser",
+		                contentType: 'application/json',
+		                data: function(){
+		                	var dataArray = new Array()
+		                	dataArray[0]=field
+		                	var output={}
+		                	output['data']=dataArray
+		                	req = formatReq(output)
+		                	return JSON.stringify(req)
+		                }(),
+		                dataType: "json",
+		                success: function(res) {
+		                    layui.data(setter.tableName, {
+		                        key:'timestamp',
+		                        value:res.timestamp
+		                      })
+		                    if(res.code==0){
+		                        //登入成功的提示与跳转
+		                        layer.msg('添加用户成功', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                          //location.href = '../index.html'; //后台主页
+		                        });
+		                    }
+		                    else{
+		                        layer.msg('添加用户失败:'+res.msg, {
+			                          offset: '15px'
+			                          ,icon: 1
+			                          ,time: 1000
+			                        }, function(){
+			                        //  location.href = '../index.html'; //后台主页
+			                        });
+		                    }
+		                },
+		                error: function(e, t) {
+	                        layer.msg('添加用户失败：', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                       //   location.href = '../index.html'; //后台主页
+		                        });
+		                }
+		            })
+              //table.reload('LAY-aduser-front-submit'); //数据刷新
+              table.reload('LAY-aduser-manage');
+              layer.close(index); //关闭弹层
+            });  
+            
+            submit.trigger('click');
+          }
+        }); 
+      }
+    };
+    
+    $('.layui-btn.layuiadmin-btn-useradmin').on('click', function(){
+      var type = $(this).data('type');
+      active[type] ? active[type].call(this) : '';
+    });
+  });
+  </script>
+</body>
+</html>

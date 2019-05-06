@@ -90,27 +90,7 @@
   <script src="../../layuiadmin/util/md5.js"></script>  
   <script src="../../layuiadmin/util/aes.js"></script>  
   <script>
-  function encrypt(word,password){
-	  password += ''
-        var len = password.length
-	    if(len<16){
-	    	for(var i=0; i<16-len; i++){
-	    		password=password+' '
-	    	}
-	    }
-	    //var key = CryptoJS.enc.Utf8.parse("abcdefgabcdefg12");
-	    var key = CryptoJS.enc.Utf8.parse(password);
-	    var srcs = CryptoJS.enc.Utf8.parse(word);
-	    var encrypted = CryptoJS.AES.encrypt(srcs, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
-	    return encrypted.toString();
-	}
-  
-
-  function decrypt(word,password){
-    var key = CryptoJS.enc.Utf8.parse(password);
-    var decrypt = CryptoJS.AES.decrypt(word, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
-    return CryptoJS.enc.Utf8.stringify(decrypt).toString();
-}
+ 
   
   layui.config({
     base: '../../layuiadmin/' //静态资源所在路径
@@ -128,20 +108,12 @@
 
     //提交
     form.on('submit(LAY-user-login-submit)', function(obj){
-    
       //请求登入接口
       admin.req({
- //       url: layui.setter.base + 'json/user/login.js' //实际使用请改成服务端真实接口
         url: '../../../rest/ad/userlogin' //实际使用请改成服务端真实接口
- //       ,data: JSON.stringify(obj.field)
         ,data:function(){
-        	//var data={}
-        	//data['password']=encrypt(obj.field.username);
-         	//var arr={};
-        	//arr['username']=obj.field.username;
-        	//arr['data']=data;
+        	layui.data(setter.tableName, {key:'password',value:obj.field.password});
         	obj.field['password']=encrypt(obj.field.password,obj.field.password);
-        	//obj.field['password']=$.md5(obj.field.password);
         	return JSON.stringify(obj.field);}()
         ,method:'post'
         ,contentType:'application/json'
@@ -149,9 +121,19 @@
         
           //请求成功后，写入 access_token
           layui.data(setter.tableName, {
-            key: setter.request.tokenName
-            ,value: res.data.access_token
+            //key: setter.request.tokenName
+            //,value: res.data.token
+            key:'token',
+            value:res.token
           });
+          layui.data(setter.tableName, {
+              key:'timestamp',
+              value:res.timestamp
+            });
+          layui.data(setter.tableName, {
+              key:'loginurl',
+              value:'user/login.html'
+            });
           
           //登入成功的提示与跳转
           layer.msg('登入成功', {

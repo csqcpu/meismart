@@ -1,0 +1,54 @@
+package com.lottery.model.auth;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Perm  implements Serializable {
+    private String select;
+
+    private String insert;
+    
+    private String update;    
+
+    private String delete;
+    
+    public String getSelect() {
+        return select;
+    }
+
+    public void setSelect(String select) {
+        this.select = select == null ? null : select.trim();
+    }
+
+    public String getInsert() {
+        return insert;
+    }
+
+    public void setInsert(String insert) {
+        this.insert = insert == null ? null : insert.trim();
+    }
+    
+    public String getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(String update) {
+        this.update = update == null ? null: update.trim();
+    }
+
+    public String getDelete() {
+        return delete;
+    }
+
+    public void setDelete(String status) {
+        this.delete = delete == null ? null: delete.trim();
+    }
+    
+    public void setTimeStmap(Long timeStmap) {
+        this.timeStmap = timeStmap;
+    }
+
+    public Long getTimeStmap() {
+        return timeStmap;
+    }
+}

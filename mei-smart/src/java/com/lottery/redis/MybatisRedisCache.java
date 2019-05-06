@@ -197,6 +197,44 @@ public class MybatisRedisCache implements Cache {
 	}	
 	
 
+	public boolean expire(Object key, long sec) {
+		RedisConnection connection = null;
+		boolean res=false;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer();
+			// connection.set(serializer.serialize(key),
+			// serializer.serialize(value));
+			res =  connection.expire(key.toString().getBytes(), sec);
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+			return res;
+	}
+	
+	public long ttl(Object key) {
+		RedisConnection connection = null;
+		long res=0l;
+		try {
+			connection = jedisConnectionFactory.getConnection();
+			RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer();
+			// connection.set(serializer.serialize(key),
+			// serializer.serialize(value));
+			res =  connection.ttl(key.toString().getBytes());
+		} catch (JedisConnectionException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+			return res;
+	}
+
 	public static void setJedisConnectionFactory(JedisConnectionFactory jedisConnectionFactory) {
 		MybatisRedisCache.jedisConnectionFactory = jedisConnectionFactory;
 	}

@@ -1,0 +1,52 @@
+package com.lottery.service.sys;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.tomcat.util.http.mapper.Mapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.lottery.mapper.ad.AdUserMapper;
+import com.lottery.mapper.sys.SysMenuMapper;
+import com.lottery.model.ad.AdUser;
+import com.lottery.model.sys.SysMenu;
+
+ 
+@Service
+@Transactional
+public class SysMenuService{
+	@Resource
+	public SysMenuMapper adUserMapper;
+
+    public List<SysMenu> findByMenuIds(){
+    	return adUserMapper.findAll();
+    }
+    
+    public int updateByUserId(AdUser adUser){
+    	return adUserMapper.updateByUserId(adUser);
+    }
+    public AdUser findByUserName(String userName){
+    	return adUserMapper.findByUserName(userName);
+    }
+    
+    public AdUser find(String userName){
+    	return adUserMapper.findByUserName(userName);
+    }
+    
+    public int delByUserName(String userName){
+    	return adUserMapper.delByUserName(userName);
+    }
+    
+    public int insert(AdUser adUser){
+    	return adUserMapper.insert(adUser);
+    }
+
+    public int update(AdUser adUser){
+    	return adUserMapper.update(adUser);
+    }
+    
+    public List<AdUser> findByParam(Map<String,Object> paramMap){
+    	return adUserMapper.findByParam(paramMap);
+    }
+}

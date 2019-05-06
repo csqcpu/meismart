@@ -1,0 +1,34 @@
+package com.lottery.mapper.admin;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+import com.lottery.model.admin.User;
+
+public interface UserMapper {
+    int deleteByPrimaryKey(String username);
+
+    int insert(User record);
+
+    int insertSelective(User record);
+
+    User selectByPrimaryKey(String username);
+
+    int updateByPrimaryKeySelective(User record);
+
+    int updateByPrimaryKey(User record);
+    
+    List<User> findAll();
+    
+    int updateByUserId(User User);
+    
+    User findByUserName(String username);
+    
+    int delByUserName(String username);
+ 
+    int update(User record);
+    
+    List<User> findByParam(Map<String,Object> param);
+}

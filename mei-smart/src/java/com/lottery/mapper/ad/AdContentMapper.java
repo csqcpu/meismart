@@ -1,6 +1,10 @@
 package com.lottery.mapper.ad;
 
+import java.util.List;
+import java.util.Map;
+
 import com.lottery.model.ad.AdContent;
+import com.lottery.model.ad.AdUser;
 
 public interface AdContentMapper {
     int deleteByPrimaryKey(Integer content_id);
@@ -14,4 +18,9 @@ public interface AdContentMapper {
     int updateByPrimaryKeySelective(AdContent record);
 
     int updateByPrimaryKey(AdContent record);
+    
+    List<AdContent> findByParam(Map<String,Object> param);
+    
+    int update(AdContent record);
+    int delByContentId(Integer content_id);
 }

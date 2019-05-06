@@ -21,6 +21,8 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function(exports){
     ,MOD_NAME: 'admin' //模块事件名
     
     ,debug: true //是否开启调试模式。如开启，接口异常时会抛出异常 URL 等信息
+    
+    ,interceptor: false //是否开启未登入拦截
 
     //自定义请求字段
     ,request: {
@@ -31,9 +33,10 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function(exports){
     ,response: {
       statusName: 'code' //数据状态的字段名称
       ,statusCode: {
-        ok: 200 //数据状态一切正常的状态码
+        ok: 0 //数据状态一切正常的状态码
     	//ok:200 //数据状态一切正常的状态码
         ,logout: 1001 //登录状态失效的状态码
+        ,perm: -1 //登录状态失效的状态码        
       }
       ,msgName: 'msg' //状态信息的字段名称
       ,dataName: 'data' //数据详情的字段名称

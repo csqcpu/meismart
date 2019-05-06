@@ -3,6 +3,7 @@ package com.lottery.mapper.ad;
 
 
 import java.util.List;
+import java.util.Map;
 
 import com.lottery.model.ad.AdUser;
 
@@ -24,4 +25,12 @@ public interface AdUserMapper {
     int updateByUserId(AdUser adUser);
     
     AdUser findByUserName(String username);
+    
+    int delByUserName(String username);
+ 
+    int update(AdUser record);
+    
+    List<AdUser> findByParam(Map<String,Object> param);
+    
+    int deleteBatch(List<AdUser> adUserList);
 }

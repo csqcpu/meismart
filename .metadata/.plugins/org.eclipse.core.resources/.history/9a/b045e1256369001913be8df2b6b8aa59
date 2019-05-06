@@ -1,0 +1,22 @@
+package com.lottery.auth;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.lottery.model.ad.PureUser;
+import com.lottery.redis.MybatisRedisCache;
+
+public class Auth{
+	@Autowired
+	static
+	MybatisRedisCache mybatisRedisCache;
+	public static void setUserInfoByToken(String token,PureUser pureUser){
+		String PUREUSER_KEY = token+":pureuser";
+		mybatisRedisCache.putObject(PUREUSER_KEY,pureUser);
+	}
+	
+	public static PureUser getUserInfoByToken(String token){
+		String PUREUSER_KEY = token+":pureuser";
+		PureUser pureUser = (PureUser) mybatisRedisCache.getObject(PUREUSER_KEY);
+		return pureUser;
+	}
+}

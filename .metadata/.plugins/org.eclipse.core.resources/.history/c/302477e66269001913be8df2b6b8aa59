@@ -1,0 +1,48 @@
+package com.lottery.model.ad;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class PureUser  implements Serializable {
+    private String userName;
+
+    private String passWord;
+    
+    private Integer role_id;    
+
+    private Integer status;
+    
+    private String timeStmap;
+
+    public String getUsername() {
+        return userName;
+    }
+
+    public void setUsername(String userName) {
+        this.userName = userName == null ? null : userName.trim();
+    }
+
+    public String getPassword() {
+        return passWord;
+    }
+
+    public void setPassword(String passWord) {
+        this.passWord = passWord == null ? null : passWord.trim();
+    }
+    
+    public Integer getRole_id() {
+        return role_id;
+    }
+
+    public void setRole_id(Integer role_id) {
+        this.role_id = role_id;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status == null ? null : 0;
+    }
+}

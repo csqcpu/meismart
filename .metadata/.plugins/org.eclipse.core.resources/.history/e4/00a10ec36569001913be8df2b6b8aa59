@@ -1,0 +1,338 @@
+package com.lottery.controller.ad;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.catalina.util.RequestUtil;
+import org.apache.log4j.Logger;
+import org.apache.tomcat.util.http.mapper.Mapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.lottery.model.ad.AdOnline;
+import com.lottery.model.ad.AdPlayHis;
+import com.lottery.model.ad.AdUser;
+import com.lottery.model.auth.PureUser;
+import com.lottery.redis.MybatisRedisCache;
+import com.lottery.schedule.ad.InsertAdPlayHisschedule;
+import com.lottery.service.ad.AdFeeService;
+import com.lottery.service.ad.AdOnlineService;
+import com.lottery.service.ad.AdPlayHisService;
+import com.lottery.service.ad.AdUserService;
+import com.lottery.util.AES;
+import com.lottery.util.RequestUtils;
+
+import redis.clients.jedis.Transaction;
+
+@Controller
+public class AdUserController implements ApplicationContextAware {
+	private static Logger logger = Logger.getLogger(AdUserController.class);
+	ExecutorService executor = Executors.newFixedThreadPool(1); // 1个线程池并发数
+	@Autowired
+	private AdOnlineService adOnlineService;
+	@Autowired
+	private AdUserService adUserService;
+	@Autowired
+	private AdPlayHisService adPlayHisService;
+	@Autowired
+	MybatisRedisCache mybatisRedisCache;
+	ApplicationContext applicationContext;
+	Semaphore feeSemaphore = new Semaphore(1, true);
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/userlogin")
+	public void userlogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		String username = requestJson.getString("username");
+		String password = requestJson.getString("password");
+		AdUser adUser = adUserService.findByUserName(username);
+		try {
+			password = AES.aesDecrypt(password, AES.complementKey(adUser.getPassword(), 16));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (adUser == null) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", -1);
+			jsonObject.put("msg", "username=" + username + " not found");
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+			return;
+		}
+		String token = "0123456789012345";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("msg", "登入成功");
+		JSONObject jsondata = new JSONObject();
+		jsondata.put("token", token);
+		jsonObject.put("data", jsondata);
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+		//用户登录信息存放在redis
+		PureUser pureUser = JSONObject.toJavaObject((JSONObject)JSONObject.toJSON(adUser),PureUser.class);
+		mybatisRedisCache.putObject(token+":pureuser", pureUser);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/adduser")
+	public void adduser(HttpServletRequest request, HttpServletResponse response) {
+		JSONObject requestJson;
+		try {
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			JSONArray dataArray = requestJson.getJSONArray("data");
+			JSONObject jsonRecord = dataArray.getJSONObject(0);
+			AdUser adUser = JSONObject.toJavaObject(jsonRecord, AdUser.class);
+			int insertCount = adUserService.insert(adUser);
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", 0);
+			jsonObject.put("data", new ArrayList());
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+		} catch (IOException e) {
+
+		} finally {
+
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/updateuser")
+	public void updateuser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
+		;
+		try {
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			JSONArray dataArray = requestJson.getJSONArray("data");
+			JSONObject jsonRecord = dataArray.getJSONObject(0);
+			AdUser adUser = JSONObject.toJavaObject(jsonRecord, AdUser.class);
+			int updateCount = adUserService.update(adUser);
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", 0);
+			jsonObject.put("data", new ArrayList());
+		} catch (IOException e) {
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", 0);
+			jsonObject.put("data", new ArrayList());
+		} finally {
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/getuser")
+	public void getuser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		int page = requestJson.getInteger("page");
+		int limit = requestJson.getInteger("limit");
+		// List<AdUser> adUserList = adUserService.findAll();
+		AdUser adUser = JSONObject.toJavaObject(requestJson, AdUser.class);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		if (adUser.getUsername()!=null && !adUser.getUsername().isEmpty())
+			paramMap.put("username", adUser.getUsername());
+		if (adUser.getCorp()!=null && !adUser.getCorp().isEmpty())
+			paramMap.put("corp", adUser.getCorp());
+		if (adUser.getContact()!=null && !adUser.getContact().isEmpty())
+			paramMap.put("contact", adUser.getContact());
+		List<AdUser> adUserList = adUserService.findByParam(paramMap);
+		List<AdUser> pageAdUserLits=new ArrayList<AdUser>();
+		for(int i=(page-1)*limit;i<adUserList.size() && i<page*limit;i++){
+//			if(i>=(page-1)*limit){
+				pageAdUserLits.add(adUserList.get(i));
+//			}
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("msg", "成功");
+		jsonObject.put("count", adUserList.size());
+		jsonObject.put("data", pageAdUserLits);
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/deluser")
+	public void deluser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		AdUser adUser = JSONObject.toJavaObject(requestJson, AdUser.class);
+		int delCount = adUserService.delByUserName(adUser.getUsername());
+		if (delCount != 1) {
+
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("msg", "成功");
+		jsonObject.put("count", delCount);
+		jsonObject.put("data", new ArrayList());
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/getvideoad")
+	public void GetAd(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		Integer locationid = requestJson.getInteger("locationid");
+		AdOnline adOnline = adOnlineService.findByOnlineId(locationid);
+		if (adOnline == null) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", -1);
+			jsonObject.put("msg", "locationid=" + locationid + " not found");
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+			return;
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		jsonObject.put("onlineid", adOnline.getOnline_id());
+		jsonObject.put("url", adOnline.getUrl());
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/adhis")
+	public void AddAdHis(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson = RequestUtils.getRequestJsonObject(request);
+		Integer onlineId = requestJson.getInteger("onlineid");
+		// Timestamp tstartdt =requestJson.getTimestamp("startdt");
+		Date startdt = requestJson.getTimestamp("startdt");
+		Date enddt = requestJson.getTimestamp("enddt");
+		Integer duration = requestJson.getInteger("duration");
+		AdPlayHis adPlayHis = new AdPlayHis();
+		adPlayHis.setOnline_id(onlineId);
+		adPlayHis.setStartdt(startdt);
+		adPlayHis.setEnddt(enddt);
+		adPlayHis.setDuration(duration);
+		// int insertnum= adPlayHisService.insert(adPlayHis);
+		final String ADPLAYHIS_MQ = "adplayhis_mq";
+		long insertnum = mybatisRedisCache.mqSend(ADPLAYHIS_MQ, adPlayHis);
+
+		if (insertnum == 0) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", -1);
+			jsonObject.put("msg", "onlineid=" + onlineId + " not found");
+			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+			response.setContentType("text/json; charset=UTF-8");
+			return;
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", 0);
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+
+		AdOnline adOnline = adOnlineService.findByOnlineId(onlineId);
+		String userName = adOnline.getUsername();
+		int price = 1;
+		String watchkey = "aduser:username:" + userName;
+		try {
+			feeSemaphore.acquire();
+			AdUser adUser = (AdUser) mybatisRedisCache.getObject(watchkey);
+			int account = adUser.getAccount();
+			if (account >= price) {
+				account = account - price;
+				adUser.setAccount(account);
+				mybatisRedisCache.putObject(watchkey, adUser);
+			} else {
+				logger.info("用户：" + userName + "费用不足");
+				return;
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			feeSemaphore.release();
+		}
+
+	}
+
+	public class FeeRunable implements Runnable {
+		MybatisRedisCache mybatisRedisCache;
+		String userName;
+		Integer price;
+
+		public FeeRunable(MybatisRedisCache mybatisRedisCache, String userName, Integer price) {
+			this.mybatisRedisCache = mybatisRedisCache;
+			this.userName = userName;
+			this.price = price;
+		}
+
+		@Override
+		public void run() {
+			String key = "aduser:username:" + userName;
+
+		}
+
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/test")
+	public void test(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("code", -1);
+		jsonObject.put("adid", 1);
+		jsonObject.put("msg", "无该id广告");
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/set")
+	public void GetSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Cookie cookie = new Cookie("mycookie", "sweet");
+		response.addCookie(cookie);
+		HttpSession session = request.getSession();
+		session.setAttribute("iflogin", true);
+		session.setAttribute("iflogim", "1234569");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/get")
+	public void ListSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession();
+		String seesionStr = session.getAttribute("iflogin").toString();
+		seesionStr += session.getAttribute("iflogim").toString();
+		response.getOutputStream().write(seesionStr.getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+	
+	public static void main(String[] args) {
+		String arry = "[{\"aa\":1},{\"bb\":2}]";
+	    JSONArray jsonarray= JSONObject.parseArray(arry);
+	    System.out.println(((JSONObject)jsonarray.get(0)).get("aa").toString());
+	    
+	}
+}

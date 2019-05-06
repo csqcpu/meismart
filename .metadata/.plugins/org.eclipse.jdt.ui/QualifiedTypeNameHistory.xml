@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.alibaba.fastjson.JSONArray"/>
+<fullyQualifiedTypeName name="org.apache.commons.lang.StringEscapeUtils"/>
+<fullyQualifiedTypeName name="com.lottery.service.ad.AdContentService"/>
+<fullyQualifiedTypeName name="org.apache.tomcat.util.http.mapper.Mapper"/>
+<fullyQualifiedTypeName name="com.lottery.mapper.sys.SysMenuMapper"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="com.lottery.service.sys.SysMenuService"/>
+<fullyQualifiedTypeName name="com.lottery.model.sys.SysMenu"/>
+<fullyQualifiedTypeName name="com.lottery.mapper.sys.SysRoleMapper"/>
+<fullyQualifiedTypeName name="com.lottery.service.sys.SysRoleService"/>
+<fullyQualifiedTypeName name="com.lottery.model.sys.SysRole"/>
+<fullyQualifiedTypeName name="com.lottery.service.admin.UserService"/>
+<fullyQualifiedTypeName name="com.lottery.mapper.admin.AdminMapper"/>
+<fullyQualifiedTypeName name="com.lottery.service.admin.AdminService"/>
+<fullyQualifiedTypeName name="com.lottery.model.admin.Admin"/>
+<fullyQualifiedTypeName name="com.lottery.model.ad.PureUser"/>
+<fullyQualifiedTypeName name="com.lottery.util.TOKEN"/>
+<fullyQualifiedTypeName name="com.lottery.auth.Auth"/>
+<fullyQualifiedTypeName name="org.springframework.stereotype.Service"/>
+<fullyQualifiedTypeName name="com.lottery.model.auth.PureUser"/>
+<fullyQualifiedTypeName name="java.lang.Exception"/>
+<fullyQualifiedTypeName name="org.json.JSONObject"/>
+<fullyQualifiedTypeName name="com.alibaba.fastjson.JSON"/>
+<fullyQualifiedTypeName name="com.lottery.util.APIResponseUtil"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="com.lottery.model.sys.SysRolePerm"/>
+<fullyQualifiedTypeName name="com.lottery.mapper.sys.SysRolePermMapper"/>
+<fullyQualifiedTypeName name="com.lottery.service.sys.SysRolePermService"/>
+<fullyQualifiedTypeName name="com.lottery.model.auth.Perm"/>
+<fullyQualifiedTypeName name="com.alibaba.fastjson.JSONObject"/>
+<fullyQualifiedTypeName name="com.lottery.service.auth.Auth"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+</qualifiedTypeNameHistroy>
