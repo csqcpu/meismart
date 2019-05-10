@@ -59,7 +59,7 @@ public class Auth {
 		return pureUser;
 	}
 
-	public String getUserPermission(String token, String Path, String action) throws Exception {
+	public String getUserPermissionByAction(String token, String Path, String action) throws Exception {
 		PureUser pureUser = getUserInfoByToken(token);
 		if (pureUser == null) {
 			throw new Exception("{msg:\"用户未登录\",code:1001}");
@@ -94,7 +94,20 @@ public class Auth {
 			} else {
 				return perm.getDelete();
 			}
+		} else if (action.equals(COMMIT_ACTION)) {
+			if (perm == null || perm.getCommit().isEmpty()) {
+				throw new Exception("{msg:\"用户无" + action + "权限\",code:-1}");
+			} else {
+				return perm.getDelete();
+			}
+		} else if (action.equals(CHECK_ACTION)) {
+			if (perm == null || perm.getCheck().isEmpty()) {
+				throw new Exception("{msg:\"用户无" + action + "权限\",code:-1}");
+			} else {
+				return perm.getDelete();
+			}
 		}
+
 		return null;
 	}
 
@@ -141,14 +154,14 @@ public class Auth {
 					return false;
 				} else
 					return true;
-			}else if (action.equals(COMMIT_ACTION)) {
+			} else if (action.equals(COMMIT_ACTION)) {
 				if (perm == null || perm.getCommit().isEmpty()) {
 					return false;
 				} else if (perm.getCommit().equals("self") && !owner.equals(pureUser.getUsername())) {
 					return false;
 				} else
 					return true;
-			}else if (action.equals(CHECK_ACTION)) {
+			} else if (action.equals(CHECK_ACTION)) {
 				if (perm == null || perm.getCheck().isEmpty()) {
 					return false;
 				} else if (perm.getCheck().equals("self") && !owner.equals(pureUser.getUsername())) {
@@ -185,14 +198,14 @@ public class Auth {
 					return false;
 				} else
 					return false;
-			}else if (action.equals(COMMIT_ACTION)) {
+			} else if (action.equals(COMMIT_ACTION)) {
 				if (perm == null || perm.getCommit().isEmpty()) {
 					return false;
 				} else if (perm.getCommit().equals("self") && !owner.equals(pureUser.getUsername())) {
 					return false;
 				} else
 					return false;
-			}else if (action.equals(CHECK_ACTION)) {
+			} else if (action.equals(CHECK_ACTION)) {
 				if (perm == null || perm.getCheck().isEmpty()) {
 					return false;
 				} else if (perm.getCheck().equals("self") && !owner.equals(pureUser.getUsername())) {
@@ -200,8 +213,62 @@ public class Auth {
 				} else
 					return true;
 			}
+		//status=2的状态只能编辑后才能提交
+		} else if (status == 2) {
+			if (action.equals(SELECT_ACTION)) {
+				if (perm == null || perm.getSelect().isEmpty()) {
+					return false;
+				} else if (perm.getSelect().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return true;
+			} else if (action.equals(INSERT_ACTION)) {
+				if (perm == null || perm.getInsert().isEmpty()) {
+					return false;
+				} else if (perm.getSelect().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return true;
+			} else if (action.equals(UPDATE_ACTION)) {
+				if (perm == null || perm.getUpdate().isEmpty()) {
+					return false;
+				} else if (perm.getSelect().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return true;
+			} else if (action.equals(DELETE_ACTION)) {
+				if (perm == null || perm.getDelete().isEmpty()) {
+					return false;
+				} else if (perm.getSelect().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return true;
+			} else if (action.equals(COMMIT_ACTION)) {
+				if (perm == null || perm.getCommit().isEmpty()) {
+					return false;
+				} else if (perm.getCommit().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return false;
+			} else if (action.equals(CHECK_ACTION)) {
+				if (perm == null || perm.getCheck().isEmpty()) {
+					return false;
+				} else if (perm.getCheck().equals("self") && !owner.equals(pureUser.getUsername())) {
+					return false;
+				} else
+					return false;
+			}
 		}
 		return false;
 	}
 
+	public Perm getUserPermission(String token, String Path) throws Exception {
+		PureUser pureUser = getUserInfoByToken(token);
+		if (pureUser == null) {
+			throw new Exception("{msg:\"用户未登录\",code:1001}");
+		}
+		SysRolePerm sysRolePerm = sysRolePermService.findByRoleId(pureUser.getRole_id(), Path);
+		return JSONObject.toJavaObject(JSONObject.parseObject(sysRolePerm.getPerm()), Perm.class);
+
+	}
 }

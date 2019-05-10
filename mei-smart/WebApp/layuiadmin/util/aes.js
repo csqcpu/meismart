@@ -17,6 +17,8 @@
 !function(e,n){"object"==typeof exports?module.exports=exports=n(require("./core.min")):"function"==typeof define&&define.amd?define(["./core.min"],n):n(e.CryptoJS)}(this,function(e){return e.enc.Utf8});
 //# sourceMappingURL=enc-utf8.min.js.map
 
+
+
 function encrypt(word,password){
 	  password += ''
       var len = password.length
@@ -50,9 +52,42 @@ function formatReq(JsonRequest){
 	var dataObject={}
 	dataObject['data']=JsonRequest.data
 	dataObject['timestamp']=layui.data(layui.setter.tableName).timestamp
+
 	var encryptdata=encrypt(JSON.stringify(dataObject),layui.data(layui.setter.tableName).password);
 	var output={}
 	output['token']=layui.data(layui.setter.tableName).token
 	output['data']=encryptdata
 	return output
 }
+
+
+
+
+function EncodeUtf8(str) {
+    var rs = '';
+    for(var i of str) {
+        var code = i.codePointAt(0);
+            if(code < 128) {
+                rs += i;
+            } else if(code > 127 && code < 2048) {
+                rs += String.fromCharCode((code >> 6) | 192, (code & 63) | 128);
+            } else if(code > 2047 && code < 65536) {
+                rs += String.fromCharCode((code >> 12) | 224, ((code >> 6) & 63) | 128, (code & 63) | 128);
+            } else if(code > 65536 && code < 1114112) {
+                rs += String.fromCharCode((code >> 18) | 240, ((code >> 12) & 63) | 128, ((code >> 6) & 63) | 128, (code & 63) | 128);
+        }
+    }
+    console.log(rs);
+    return rs;
+}
+
+function _encodeUTF8(str){
+	var temp = "",rs = "";
+	for( var i=0 , len = str.length; i < len; i++ ){
+		temp = str.charCodeAt(i).toString(16);
+		rs  += "\\u"+ new Array(5-temp.length).join("0") + temp;
+	}
+	return rs;
+ }
+
+

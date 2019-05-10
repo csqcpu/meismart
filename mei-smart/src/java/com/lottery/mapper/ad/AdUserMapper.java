@@ -33,4 +33,10 @@ public interface AdUserMapper {
     List<AdUser> findByParam(Map<String,Object> param);
     
     int deleteBatch(List<AdUser> adUserList);
+    
+    int submitCheck(List<AdUser> adUserList);
+    
+    int checkPass(List<AdUser> adUserList);
+    
+    int checkFail(List<AdUser> adUserList);
 }

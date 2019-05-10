@@ -58,4 +58,15 @@ public class AdUserService{
     	return adUserMapper.deleteBatch(adUserList);
     }
     
+    public int submitCheck(List<AdUser> adUserList){
+    	return adUserMapper.submitCheck(adUserList);
+    }
+    
+    public int checkPass(List<AdUser> adUserList){
+    	return adUserMapper.checkPass(adUserList);
+    }
+    
+    public int checkFail(List<AdUser> adUserList){
+    	return adUserMapper.checkFail(adUserList);
+    }
 }

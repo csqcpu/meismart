@@ -16,11 +16,13 @@
 		<result column="pay_id" jdbcType="INTEGER" property="pay_id" />
 		<result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
 		<result column="createuser" jdbcType="VARCHAR" property="createuser" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
 		<result column="status" jdbcType="INTEGER" property="status" />
 	</resultMap>
-	<!--  <cache type="com.lottery.redis.MybatisRedisCache" />-->
+	<!-- <cache type="com.lottery.redis.MybatisRedisCache" /> -->
 	<sql id="Base_Column_List">
-		username, password, role_id,smscode, corp, addr, postcode, contact,
+		username, password, role_id,smscode, corp, addr, postcode,
+		contact,
 		mobile, telephone,
 		account,
 		pay_id, createdt, createuser,status
@@ -42,7 +44,7 @@
 		corp, addr, postcode,
 		contact, mobile, telephone,
 		account, pay_id, createdt,
-		createuser,status)
+		createuser,sex,status)
 		values
 		(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
 		#{smscode,jdbcType=VARCHAR},
@@ -52,7 +54,8 @@
 		#{telephone,jdbcType=VARCHAR},
 		#{account,jdbcType=INTEGER},
 		#{pay_id,jdbcType=INTEGER}, #{createdt,jdbcType=TIMESTAMP},
-		#{createuser,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+		#{createuser,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER})
 	</insert>
 	<insert id="insertSelective" parameterType="com.lottery.model.ad.AdUser">
 		insert into aduser
@@ -96,6 +99,9 @@
 			<if test="createuser != null">
 				createuser,
 			</if>
+			<if test="sex != null">
+				sex
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="username != null">
@@ -136,6 +142,9 @@
 			</if>
 			<if test="createuser != null">
 				#{createuser,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
@@ -207,53 +216,62 @@
 		resultMap="BaseResultMap">
 		select * from aduser
 	</select>
-	
+
 	<update id="updateByUserId" parameterType="com.lottery.model.ad.AdUser">
 		update aduser set
 		account = #{account,jdbcType=INTEGER} where username =
 		#{username,jdbcType=VARCHAR}
 	</update>
-	
+
 	<select id="findByUserName" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
-		select * from aduser where username=#{username,jdbcType=VARCHAR}
+		select * from aduser where
+		username=#{username,jdbcType=VARCHAR}
 	</select>
-	
+
 	<delete id="delByUserName" parameterType="java.lang.String">
-		delete from aduser where username=#{username,jdbcType=VARCHAR}
+		delete from aduser
+		where username=#{username,jdbcType=VARCHAR}
 	</delete>
-	
+
 	<update id="update" parameterType="com.lottery.model.ad.AdUser">
 		update aduser
 		set
-		password = #{password,jdbcType=VARCHAR},
+		password =
+		#{password,jdbcType=VARCHAR},
 		smscode =
 		#{smscode,jdbcType=VARCHAR},
 		corp = #{corp,jdbcType=VARCHAR},
 		addr =
 		#{addr,jdbcType=VARCHAR},
 		postcode = #{postcode,jdbcType=VARCHAR},
-		contact = #{contact,jdbcType=VARCHAR},
+		contact =
+		#{contact,jdbcType=VARCHAR},
 		mobile =
 		#{mobile,jdbcType=VARCHAR},
 		telephone = #{telephone,jdbcType=VARCHAR},
-		account = #{account,jdbcType=INTEGER},
+		account =
+		#{account,jdbcType=INTEGER},
 		pay_id =
 		#{pay_id,jdbcType=INTEGER},
 		createdt = #{createdt,jdbcType=TIMESTAMP},
-		createuser = #{createuser,jdbcType=VARCHAR}
+		createuser =
+		#{createuser,jdbcType=VARCHAR},
+		sex =
+		#{sex,jdbcType=VARCHAR},
+		status =
+		#{status,jdbcType=INTEGER}
 		where username =
 		#{username,jdbcType=VARCHAR}
 	</update>
-	
-	<select id="findByParam" parameterType="Map"
-		resultMap="BaseResultMap">
-		select * from aduser 		
+
+	<select id="findByParam" parameterType="Map" resultMap="BaseResultMap">
+		select * from aduser
 		<where>
-		     1=1
+			1=1
 			<if test="username != null">
 				and username like '%' #{username,jdbcType=VARCHAR} '%'
-			</if>		     
+			</if>
 			<if test="password != null">
 				and password like '%' #{password,jdbcType=VARCHAR}'%'
 			</if>
@@ -288,20 +306,48 @@
 				and createdt like '%' #{createdt,jdbcType=TIMESTAMP} '%'
 			</if>
 			<if test="createuser != null">
-				and createuser like '%' #{createuser,jdbcType=VARCHAR} '%'
+				and createuser like '%' #{createuser,jdbcType=VARCHAR}
+				'%'
 			</if>
 			<if test="perm != null">
 				and username = #{perm,jdbcType=VARCHAR}
 			</if>
 		</where>
 	</select>
-	
+
 	<delete id="deleteBatch" parameterType="java.util.List">
-		delete from aduser where username in (
+		delete from aduser where username in
+		<foreach collection="list" item="item" index="index"
+			separator="," open="(" close=")">
+			#{item.username,jdbcType=VARCHAR}
+		</foreach>
+	</delete>
+
+
+	<update id="submitCheck" parameterType="java.util.List">
+		update aduser set status=1 where username in (
 		<foreach collection="list" item="item" index="index"
 			separator=",">
 			#{item.username,jdbcType=VARCHAR}
 		</foreach>
-		)
-	</delete>
+		) and status=0
+	</update>
+
+	<update id="checkPass" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"
+			separator=" " open="" close=";">
+			update aduser set
+			status=3,checkuser=#{item.checkuser,jdbcType=VARCHAR},checkdt=now()
+			where username=#{item.username,jdbcType=VARCHAR} and status=1
+		</foreach>
+	</update>
+
+	<update id="checkFail" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"
+			separator=" " open="" close=";">
+			update aduser set
+			status=2,checkuser=#{item.checkuser,jdbcType=VARCHAR},checkdt=now()
+			where username=#{item.username,jdbcType=VARCHAR} and status=1
+		</foreach>
+	</update>
 </mapper>

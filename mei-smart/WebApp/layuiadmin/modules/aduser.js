@@ -1,6 +1,8 @@
 /** layuiAdmin.std-v1.1.0 LPPL License By http://www.layui.com/admin/ */ ;
-layui.define(["table", 'util',"form"], function(e) {
+layui.define(["$$","table", 'util',"form"], function(e) {
+	$ = layui.jquery; 
 	var t = layui.$,
+	$$ = layui.$$,
 	util=layui.util,
 	i = layui.table;
 	layui.form;
@@ -8,21 +10,20 @@ layui.define(["table", 'util',"form"], function(e) {
 		elem: "#LAY-aduser-manage",
 		url: layui.setter.base + "../../rest/ad/getuser",
         method:'post',
-        where: function(){
-//        	var dataArray = new Array()
-//        	dataArray[0]=field
-        	var output={}
-        	output['data']=[]
-        	req = formatReq(output)
-        	return req
-        }(),
-        parseData: function (res) {
- 		   var data = decrypt(res.data,layui.data(layui.setter.tableName).password)
- 		   data = JSON.parse(data)
- 		   res.data=data
- 		   return res
- 	    },
+//       where: function(){
+//        	var output={}
+//        	output['data']=[]
+//        	req = formatReq(output)
+//        	return req
+//        }(),
+//        parseData: function (res) {
+// 		   var data = decrypt(res.data,layui.data(layui.setter.tableName).password)
+// 		   data = JSON.parse(data)
+// 		   res.data=data
+// 		   return res
+// 	    },
         contentType:'application/json',
+        toolbar: '#test-table-toolbar-toolbarDemo',
 		cols: [
 			[{
 				type: "checkbox",
@@ -94,14 +95,27 @@ layui.define(["table", 'util',"form"], function(e) {
 			formType: 1,
 			title: "敏感操作，请验证口令"
 		}, function(t, i) {
-			layer.close(i), layer.confirm("真的删除行么", function(t) {
+	        if(t!=layui.data(layui.setter.tableName).password){
+	          	layer.msg('密码错误！', {
+	                  offset: '15px'
+	                  ,icon: 1
+	                  ,time: 1000
+	                })
+	          	return
+	          }
+	        layer.close(i);
+			layer.confirm("真的删除行么", function(t) {
 				e.del(), layer.close(t),
-				 $.ajax({
+				$$.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/deluser",
 		                contentType: 'application/json',
 		                data: function(){
-		                	return JSON.stringify(e.data);
+		                	var dataArray = new Array()
+		                	dataArray[0]=e.data
+		                	var output={}
+		                	output['data']=dataArray
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(data) {
@@ -139,19 +153,24 @@ layui.define(["table", 'util',"form"], function(e) {
 			})
 		});
 		else if ("submitcheck" === e.event) layer.confirm("确定提交审核么", function(t) {
-				e.del(), layer.close(t),
-				 $.ajax({
+				//e.del(), 
+				layer.close(t),
+				$$.ajax({
 		                type: 'POST',
-		                url: layui.setter.base + "../../rest/ad/submitcheck",
+		                url: layui.setter.base + "../../rest/ad/submitcheckuser",
 		                contentType: 'application/json',
 		                data: function(){
-		                	return JSON.stringify(e.data);
+		                	var dataArray = new Array()
+		                	dataArray[0]=e.data
+		                	var output={}
+		                	output['data']=dataArray
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(data) {
 		                    if(data.code==0){
 		                        //登入成功的提示与跳转
-		                        layer.msg('删除用户成功', {
+		                        layer.msg('提交审核成功', {
 		                          offset: '15px'
 		                          ,icon: 1
 		                          ,time: 1000
@@ -161,7 +180,7 @@ layui.define(["table", 'util',"form"], function(e) {
 		                        });
 		                    }
 		                    else{
-		                        layer.msg('删除用户失败:'+data.msg, {
+		                        layer.msg('提交审核失败:'+data.msg, {
 			                          offset: '15px'
 			                          ,icon: 1
 			                          ,time: 1000
@@ -171,7 +190,7 @@ layui.define(["table", 'util',"form"], function(e) {
 		                    }
 		                },
 		                error: function(e, t) {
-	                        layer.msg('删除用户失败：', {
+	                        layer.msg('提交审核失败：', {
 		                          offset: '15px'
 		                          ,icon: 1
 		                          ,time: 1000
@@ -181,6 +200,102 @@ layui.define(["table", 'util',"form"], function(e) {
 		                }
 		            })
 		});
+		else if ("checkuserpass" === e.event) layer.confirm("确定审核通过么", function(t) {
+			//e.del(), 
+			layer.close(t),
+			$$.ajax({
+	                type: 'POST',
+	                url: layui.setter.base + "../../rest/ad/checkuserpass",
+	                contentType: 'application/json',
+	                data: function(){
+	                	var dataArray = new Array()
+	                	dataArray[0]=e.data
+	                	var output={}
+	                	output['data']=dataArray
+	                	return output
+	                }(),
+	                dataType: "json",
+	                success: function(data) {
+	                    if(data.code==0){
+	                        //登入成功的提示与跳转
+	                        layer.msg('审核通过成功', {
+	                          offset: '15px'
+	                          ,icon: 1
+	                          ,time: 1000
+	                        }, function(){
+	                        	layui.table.reload("LAY-aduser-manage")
+	                          //location.href = '../index.html'; //后台主页
+	                        });
+	                    }
+	                    else{
+	                        layer.msg('审核通过失败:'+data.msg, {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                        //  location.href = '../index.html'; //后台主页
+		                        });
+	                    }
+	                },
+	                error: function(e, t) {
+                        layer.msg('审核通过失败：', {
+	                          offset: '15px'
+	                          ,icon: 1
+	                          ,time: 1000
+	                        }, function(){
+	                       //   location.href = '../index.html'; //后台主页
+	                        });
+	                }
+	            })
+	});
+		else if ("checkuserfail" === e.event) layer.confirm("确定审核不通过么", function(t) {
+			//e.del(), 
+			layer.close(t),
+			$$.ajax({
+	                type: 'POST',
+	                url: layui.setter.base + "../../rest/ad/checkuserfail",
+	                contentType: 'application/json',
+	                data: function(){
+	                	var dataArray = new Array()
+	                	dataArray[0]=e.data
+	                	var output={}
+	                	output['data']=dataArray
+	                	return output
+	                }(),
+	                dataType: "json",
+	                success: function(data) {
+	                    if(data.code==0){
+	                        //登入成功的提示与跳转
+	                        layer.msg('审核不通过成功', {
+	                          offset: '15px'
+	                          ,icon: 1
+	                          ,time: 1000
+	                        }, function(){
+	                        	layui.table.reload("LAY-aduser-manage")
+	                          //location.href = '../index.html'; //后台主页
+	                        });
+	                    }
+	                    else{
+	                        layer.msg('审核不通过失败:'+data.msg, {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                        //  location.href = '../index.html'; //后台主页
+		                        });
+	                    }
+	                },
+	                error: function(e, t) {
+                        layer.msg('审核不通过失败：', {
+	                          offset: '15px'
+	                          ,icon: 1
+	                          ,time: 1000
+	                        }, function(){
+	                       //   location.href = '../index.html'; //后台主页
+	                        });
+	                }
+	            })
+	});
 		else if ("edit" === e.event) {
 			t(e.tr);
 			layer.open({
@@ -189,7 +304,6 @@ layui.define(["table", 'util',"form"], function(e) {
 				content: "../../views/ad/userform.html",
 				maxmin: !0,
 				area: ["500px", "650px"],
-				//area: ["500px", "450px"],
 				btn: ["确定", "取消"],
 				yes: function(e, t) {
 					var l = window["layui-layer-iframe" + e],
@@ -199,17 +313,16 @@ layui.define(["table", 'util',"form"], function(e) {
 						field=t.field;
 						i.reload("LAY-aduser-front-submit"), layer.close(e)
 					}), n.trigger("click")
-					$.ajax({
+					$$.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/updateuser",
-		                contentType: 'application/json',
+		                contentType: 'application/json;charset=utf-8',
 		                data: function(){
 		                	var dataArray = new Array()
 		                	dataArray[0]=field
 		                	var output={}
-		                	output['token']="1234567890123456"
 		                	output['data']=dataArray
-		                	return JSON.stringify(output)
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(data) {
@@ -221,7 +334,6 @@ layui.define(["table", 'util',"form"], function(e) {
 		                          ,time: 1000
 		                        }, function(){
 		                        	layui.table.reload("LAY-aduser-manage")
-		                          //location.href = '../index.html'; //后台主页
 		                        });
 		                    }
 		                    else{
@@ -250,6 +362,7 @@ layui.define(["table", 'util',"form"], function(e) {
 				    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 				    var responsedata = layui.data
 				    iframeWin.document.getElementsByName('username')[0].value=e.data.username||''
+				    //iframeWin.$("input[name='username'][type=text]").val(e.data.username||'');
 				    iframeWin.document.getElementsByName('corp')[0].value=e.data.corp||''
 				    iframeWin.document.getElementsByName('contact')[0].value=e.data.contact||''
 				    iframeWin.document.getElementsByName('mobile')[0].value=e.data.mobile||''
@@ -257,7 +370,8 @@ layui.define(["table", 'util',"form"], function(e) {
 				    iframeWin.document.getElementsByName('addr')[0].value=e.data.addr||''
 				    iframeWin.document.getElementsByName('postcode')[0].value=e.data.postcode||''
 				    iframeWin.document.getElementsByName('account')[0].value=e.data.account||''
-				    //body.find(".phone").val('12345678901');
+				    //$("input[name='sex'][type=radio][value='"+e.data.sex+"']",iframeWin.document).attr("checked",true);
+				    iframeWin.$("input[name='sex'][type=radio][value='"+e.data.sex+"']").attr("checked",true);
 					}
 			})
 		}

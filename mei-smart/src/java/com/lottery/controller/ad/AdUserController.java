@@ -2,10 +2,12 @@ package com.lottery.controller.ad;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +38,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lottery.model.ad.AdOnline;
 import com.lottery.model.ad.AdPlayHis;
 import com.lottery.model.ad.AdUser;
+import com.lottery.model.auth.Perm;
 import com.lottery.model.auth.PureUser;
 import com.lottery.redis.MybatisRedisCache;
 import com.lottery.schedule.ad.InsertAdPlayHisschedule;
@@ -83,30 +86,19 @@ public class AdUserController implements ApplicationContextAware {
 				return;
 			}
 			password = AES.aesDecrypt(password, AES.complementKey(adUser.getPassword(), 16));
-			// String token = "0123456789012345";
 			String token = TOKEN.makeToken();
-			long timeStamp = System.currentTimeMillis();
-
-			// String timeStampEncrypt =
-			// AES.aesEncrypt(String.valueOf(timeStamp),
-			// AES.complementKey(adUser.getPassword(), 16));
+			long timestamp = System.currentTimeMillis();
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "登入成功");
 			jsonObject.put("token", token);
-			jsonObject.put("timestamp", timeStamp);
-			// jsonObject.put("data", jsondata);
-			// JSONObject jsondata = new JSONObject();
-			// jsondata.put("token", token);
-			// jsondata.put("timestamp", timeStamp);
-			// jsonObject.put("data", jsondata);
+			jsonObject.put("timestamp", timestamp);
 			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
 			response.setContentType("text/json; charset=UTF-8");
 			// 用户登录信息存放在redis
 			PureUser pureUser = JSONObject.toJavaObject((JSONObject) JSONObject.toJSON(adUser), PureUser.class);
-			pureUser.setTimeStmap(timeStamp);
-			// mybatisRedisCache.putObject(token+":pureuser", pureUser);
+			pureUser.setTimeStmap(timestamp);
 			auth.setUserInfoByToken(token, pureUser);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -124,7 +116,7 @@ public class AdUserController implements ApplicationContextAware {
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
 			PureUser pureUser = auth.authenticateUser(token);
-			String permStr = auth.getUserPermission(token, path, Auth.INSERT_ACTION);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.INSERT_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
 					AES.complementKey(pureUser.getPassword(), 16));
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
@@ -137,13 +129,18 @@ public class AdUserController implements ApplicationContextAware {
 			adUser.setCreateuser(pureUser.getUsername());
 			adUser.setCreatedt(new Date());
 			int insertCount = adUserService.insert(adUser);
-			long timeStamp = System.currentTimeMillis();
+			long timestamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", insertCount);
-			jsonObject.put("timeStamp", timeStamp);
+			jsonObject.put("timestamp", timestamp);
 			jsonObject.put("data", new ArrayList());
-			pureUser.setTimeStmap(timeStamp);
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
+			
+			pureUser.setTimeStmap(timestamp);
 			auth.setUserInfoByToken(token, pureUser);
 		} catch (Exception e) {
 			jsonObject = APIResponseUtil.makeErrorJSON(e);
@@ -158,25 +155,35 @@ public class AdUserController implements ApplicationContextAware {
 		JSONObject requestJson;
 		JSONObject jsonObject = new JSONObject();
 		try {
+			String path = request.getRequestURI();
 			requestJson = RequestUtils.getRequestJsonObject(request);
-			JSONArray dataArray = requestJson.getJSONArray("data");
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.INSERT_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+			
 			JSONObject jsonRecord = dataArray.getJSONObject(0);
 			AdUser adUser = JSONObject.toJavaObject(jsonRecord, AdUser.class);
+			adUser.setStatus(0);
 			int updateCount = adUserService.update(adUser);
+			long timestamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", 0);
-			jsonObject.put("data", new ArrayList());
-		} catch (IOException e) {
-			jsonObject.put("code", 0);
-			jsonObject.put("msg", "成功");
-			jsonObject.put("count", 0);
-			jsonObject.put("data", new ArrayList());
-		} finally {
-			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-			response.setContentType("text/json; charset=UTF-8");
+			jsonObject.put("timestamp", timestamp);
+			//jsonObject.put("data", new ArrayList());
+			pureUser.setTimeStmap(timestamp);
+			auth.setUserInfoByToken(token, pureUser);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
 		}
-	}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+}
 
 	@ResponseBody
 	@RequestMapping(value = "/rest/ad/getuser")
@@ -188,7 +195,7 @@ public class AdUserController implements ApplicationContextAware {
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
 			PureUser pureUser = auth.authenticateUser(token);
-			String permStr = auth.getUserPermission(token, path, Auth.SELECT_ACTION);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.SELECT_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
 					AES.complementKey(pureUser.getPassword(), 16));
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
@@ -223,7 +230,209 @@ public class AdUserController implements ApplicationContextAware {
 						auth.getRolePermission(token, path, "", a.getStatus(), Auth.COMMIT_ACTION));
 				permObject.put("checkenable",
 						auth.getRolePermission(token, path, "", a.getStatus(), Auth.CHECK_ACTION));
-				a.perm = permObject;
+				a.setPerm(permObject);
+			}
+
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", adUserList.size());
+			jsonObject.put("data", pageAdUserLits);
+
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
+		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/submitcheckuser")
+	public void submitcheckuser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
+		try {
+			String path = request.getRequestURI();
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.COMMIT_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
+			List<AdUser> adUserList = new ArrayList<AdUser>();
+			for (int i = 0; i < dataArray.size(); i++) {
+				JSONObject o = dataArray.getJSONObject(i);
+				AdUser adUser = JSONObject.toJavaObject(o, AdUser.class);
+				boolean commitEnable = auth.getRolePermission(token, path, "", adUser.getStatus(), Auth.COMMIT_ACTION);
+				if (commitEnable)
+					adUserList.add(JSONObject.toJavaObject(o, AdUser.class));
+			}
+			int submitNum = adUserService.submitCheck(adUserList);
+			Perm userPerm = auth.getUserPermission(token, path);
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", submitNum);
+			jsonObject.put("data", new ArrayList());
+			jsonObject.put("perm", userPerm);
+
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
+		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/checkuserpass")
+	public void checkuserpass(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
+		try {
+			String path = request.getRequestURI();
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.CHECK_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
+			List<AdUser> adUserList = new ArrayList<AdUser>();
+			for (int i = 0; i < dataArray.size(); i++) {
+				JSONObject o = dataArray.getJSONObject(i);
+				AdUser adUser = JSONObject.toJavaObject(o, AdUser.class);
+				boolean checkEnable = auth.getRolePermission(token, path, "", adUser.getStatus(), Auth.CHECK_ACTION);
+				if (checkEnable){
+					adUser.setCheckuser(pureUser.getUsername());
+					adUser.setCheckdt(new Date());
+					adUserList.add(adUser);
+				}
+			}
+			int passNum = adUserService.checkPass(adUserList);
+			Perm userPerm = auth.getUserPermission(token, path);
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", passNum);
+			jsonObject.put("data", new ArrayList());
+			jsonObject.put("perm", userPerm);
+
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
+		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/checkuserfail")
+	public void checkuserfail(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
+		try {
+			String path = request.getRequestURI();
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.CHECK_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
+			List<AdUser> adUserList = new ArrayList<AdUser>();
+			for (int i = 0; i < dataArray.size(); i++) {
+				JSONObject o = dataArray.getJSONObject(i);
+				AdUser adUser = JSONObject.toJavaObject(o, AdUser.class);
+				boolean checkEnable = auth.getRolePermission(token, path, "", adUser.getStatus(), Auth.CHECK_ACTION);
+				if (checkEnable){
+					adUser.setCheckuser(pureUser.getUsername());
+					adUser.setCheckdt(new Date());
+					adUserList.add(adUser);
+				}
+			}
+			int passNum = adUserService.checkFail(adUserList);
+			Perm userPerm = auth.getUserPermission(token, path);
+			jsonObject.put("code", 0);
+			jsonObject.put("msg", "成功");
+			jsonObject.put("count", passNum);
+			jsonObject.put("data", new ArrayList());
+			jsonObject.put("perm", userPerm);
+
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
+		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/rest/ad/finduser")
+	public void finduser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
+		try {
+			String path = request.getRequestURI();
+			requestJson = RequestUtils.getRequestJsonObject(request);
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.SELECT_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
+			int page = requestJson.getInteger("page");
+			int limit = requestJson.getInteger("limit");
+			AdUser adUser = JSONObject.toJavaObject(dataArray.getJSONObject(0), AdUser.class);
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			if (adUser.getUsername() != null && !adUser.getUsername().isEmpty())
+				paramMap.put("username", adUser.getUsername());
+			if (adUser.getCorp() != null && !adUser.getCorp().isEmpty())
+				paramMap.put("corp", adUser.getCorp());
+			if (adUser.getContact() != null && !adUser.getContact().isEmpty())
+				paramMap.put("contact", adUser.getContact());
+			// 用户权限
+			if (permStr != null && permStr.equals("self"))
+				paramMap.put("perm", adUser.getUsername());
+			List<AdUser> adUserList = adUserService.findByParam(paramMap);
+			List<AdUser> pageAdUserLits = new ArrayList<AdUser>();
+			for (int i = (page - 1) * limit; i < adUserList.size() && i < page * limit; i++) {
+				pageAdUserLits.add(adUserList.get(i));
+			}
+			for (AdUser a : pageAdUserLits) {
+				JSONObject permObject = new JSONObject();
+				permObject.put("addenable", auth.getRolePermission(token, path, "", a.getStatus(), Auth.INSERT_ACTION));
+				permObject.put("delenable", auth.getRolePermission(token, path, "", a.getStatus(), Auth.DELETE_ACTION));
+				permObject.put("eidtenable",
+						auth.getRolePermission(token, path, "", a.getStatus(), Auth.UPDATE_ACTION));
+				permObject.put("commitenable",
+						auth.getRolePermission(token, path, "", a.getStatus(), Auth.COMMIT_ACTION));
+				permObject.put("checkenable",
+						auth.getRolePermission(token, path, "", a.getStatus(), Auth.CHECK_ACTION));
+				a.setPerm(permObject);
 			}
 
 			jsonObject.put("code", 0);
@@ -252,24 +461,34 @@ public class AdUserController implements ApplicationContextAware {
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
 			PureUser pureUser = auth.authenticateUser(token);
-			String permStr = auth.getUserPermission(token, path, Auth.DELETE_ACTION);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.DELETE_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
 					AES.complementKey(pureUser.getPassword(), 16));
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
 			JSONArray dataArray = dataOject.getJSONArray("data");
 			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
 
-			List<AdUser> adUserList = JSONObject.toJavaObject(dataArray, List.class);
-			int delCount= adUserService.deleteBatch(adUserList);
-			if (delCount != 1) {
-
+			List<AdUser> adUserList = new ArrayList<AdUser>();
+			for (int i = 0; i < dataArray.size(); i++) {
+				JSONObject o = dataArray.getJSONObject(i);
+				AdUser adUser = JSONObject.toJavaObject(o, AdUser.class);
+				AdUser adUserInDB = adUserService.findByUserName(adUser.getUsername());
+				boolean deleteEnable = auth.getRolePermission(token, path, "", adUserInDB.getStatus(),
+						Auth.DELETE_ACTION);
+				if (deleteEnable)
+					adUserList.add(adUser);
 			}
-			long timeStamp = System.currentTimeMillis();
+			int delCount = adUserService.deleteBatch(adUserList);
+
+			long timestamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", delCount);
-			jsonObject.put("timestamp", timeStamp);
-			jsonObject.put("data", new ArrayList());
+			jsonObject.put("timestamp", timestamp);
+			//jsonObject.put("data", new ArrayList());
+			
+			pureUser.setTimeStmap(timestamp);
+			auth.setUserInfoByToken(token, pureUser);
 		} catch (Exception e) {
 			jsonObject = APIResponseUtil.makeErrorJSON(e);
 		}
@@ -373,46 +592,24 @@ public class AdUserController implements ApplicationContextAware {
 
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/test")
-	public void test(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("code", -1);
-		jsonObject.put("adid", 1);
-		jsonObject.put("msg", "无该id广告");
-		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-		response.setContentType("text/json; charset=UTF-8");
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/set")
-	public void GetSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Cookie cookie = new Cookie("mycookie", "sweet");
-		response.addCookie(cookie);
-		HttpSession session = request.getSession();
-		session.setAttribute("iflogin", true);
-		session.setAttribute("iflogim", "1234569");
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/get")
-	public void ListSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		HttpSession session = request.getSession();
-		String seesionStr = session.getAttribute("iflogin").toString();
-		seesionStr += session.getAttribute("iflogim").toString();
-		response.getOutputStream().write(seesionStr.getBytes("UTF-8"));
-		response.setContentType("text/json; charset=UTF-8");
-	}
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	public static void main(String[] args) {
-		String arry = "[{\"aa\":1},{\"bb\":2}]";
+		String arry = "[{\"username\":\"1\",\"password\":\"2\"},{\"username\":\"2\",\"password\":\"22\"}]";
 		JSONArray jsonarray = JSONObject.parseArray(arry);
+		List<AdUser> adUserList = new ArrayList<AdUser>();
+		AdUser adUser = JSONObject.toJavaObject(jsonarray.getJSONObject(0), AdUser.class);
+		adUserList.add(adUser);
+		adUser = JSONObject.toJavaObject(jsonarray.getJSONObject(1), AdUser.class);
+		adUserList.add(adUser);
+		// List<AdUser> adUserList = JSONObject.toJavaObject(jsonarray,
+		// List.class);
+
+		AdUser a = adUserList.get(1);
+
 		System.out.println(((JSONObject) jsonarray.get(0)).get("aa").toString());
 
 	}

@@ -49,6 +49,7 @@ public class RequestUtils {
 
 	public static String getRequestPostStr(HttpServletRequest request) throws IOException {
 		byte buffer[] = getRequestPostBytes(request);
+		//return new String(buffer);
 		String charEncoding = request.getCharacterEncoding();
 		if (charEncoding == null) {
 			charEncoding = "UTF-8";

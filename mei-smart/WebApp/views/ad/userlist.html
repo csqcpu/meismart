@@ -70,8 +70,8 @@
           <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="submitcheck"><i class="layui-icon layui-icon-right"></i>提交审核</a>
           {{#  } }}
           {{#  if(d.perm.checkenable){ }}
-          <a class="layui-btn layui-btn layui-btn-xs" lay-event="check"><i class="layui-icon layui-icon-ok"></i>审核通过</a>
-          <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="check"><i class="layui-icon layui-icon-close"></i>审核不通过</a>
+          <a class="layui-btn layui-btn layui-btn-xs" lay-event="checkuserpass"><i class="layui-icon layui-icon-ok"></i>审核通过</a>
+          <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="checkuserfail"><i class="layui-icon layui-icon-close"></i>审核不通过</a>
           {{#  } }}
         </script>
         <script type="text/html" id="buttonTpl">
@@ -88,16 +88,18 @@
       </div>
     </div>
   </div>
-  <script src="../../layuiadmin/util/jquery.min.js"></script>
+  <!-- script src="../../layuiadmin/util/jquery.min.js"></script> -->
   <script src="../../layuiadmin/layui/layui.js"></script> 
   <script src="../../layuiadmin/util/aes.js"></script>  
   <script>
   layui.config({
     base: '../../layuiadmin/' //静态资源所在路径
   }).extend({
-    index: 'lib/index' //主入口模块
-  }).use(['index', 'aduser', 'table'], function(){
+    index: 'lib/index', //主入口模块
+    $$:'modules/$$'
+  }).use(['$$','index', 'aduser', 'table'], function(){
     var $ = layui.$
+    var $$ = layui.$$
     ,form = layui.form
     ,table = layui.table
     ,data = layui.data
@@ -131,21 +133,20 @@
           if(value!=data(setter.tableName).password){
         	layer.msg('密码错误！', {
                 offset: '15px'
-                ,icon: 1
+                ,icon: 2
                 ,time: 1000
               })
         	return
         }
           layer.confirm('确定删除吗？', function(index) {
-          $.ajax({
+        	$$.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/deluser",
 		                contentType: 'application/json',
 		                data: function(){
 		                	var output={}
 		                	output['data']=checkData
-		                	req = formatReq(output)
-		                	return JSON.stringify(req)
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(data) {
@@ -161,7 +162,7 @@
 		                    else{
 		                        layer.msg('批量删除用户失败:'+data.msg, {
 			                          offset: '15px'
-			                          ,icon: 1
+			                          ,icon: 2
 			                          ,time: 1000
 			                        }, function(){
 			                        });
@@ -170,7 +171,7 @@
 		                error: function(e, t) {
 	                        layer.msg('批量删除用户失败：', {
 		                          offset: '15px'
-		                          ,icon: 1
+		                          ,icon: 2
 		                          ,time: 1000
 		                        }, function(){
 		                        });
@@ -185,20 +186,25 @@
           ,title: '添加用户'
           ,content: 'userform.html'
           ,maxmin: true
-          ,area: ['500px', '450px']
+          ,area: ['500px', '650px']
           ,btn: ['确定', '取消']
 		,success: function(layero, index) {
 		    var body = layer.getChildFrame('body', index);
 		    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
-		    iframeWin.document.getElementsByName('username')[0].value=e.data.username||''
-		    iframeWin.document.getElementsByName('corp')[0].value=e.data.corp||''
-		    iframeWin.document.getElementsByName('contact')[0].value=e.data.contact||''
-		    iframeWin.document.getElementsByName('mobile')[0].value=e.data.mobile||''
-		    iframeWin.document.getElementsByName('telephone')[0].value=e.data.telephone||''
-		    iframeWin.document.getElementsByName('addr')[0].value=e.data.addr||''
-		    iframeWin.document.getElementsByName('postcode')[0].value=e.data.postcode||''
-		    iframeWin.document.getElementsByName('account')[0].value=e.data.account||''
-		    //body.find(".phone").val('12345678901');
+		    var checkStatus = table.checkStatus("LAY-aduser-manage");
+		    var data = checkStatus.data;
+		    if(data.length>0){
+		    	data=data[0]
+		    iframeWin.document.getElementsByName('username')[0].value=data.username||''
+		    iframeWin.document.getElementsByName('corp')[0].value=data.corp||''
+		    iframeWin.document.getElementsByName('contact')[0].value=data.contact||''
+		    iframeWin.document.getElementsByName('mobile')[0].value=data.mobile||''
+		    iframeWin.document.getElementsByName('telephone')[0].value=data.telephone||''
+		    iframeWin.document.getElementsByName('addr')[0].value=data.addr||''
+		    iframeWin.document.getElementsByName('postcode')[0].value=data.postcode||''
+		    iframeWin.document.getElementsByName('account')[0].value=data.account||''
+		    iframeWin.$("input[name='sex'][type=radio][value='"+data.sex+"']").attr("checked",true);
+		    }
 			}
           ,yes: function(index, layero){
             var iframeWindow = window['layui-layer-iframe'+ index]
@@ -208,17 +214,16 @@
             //监听提交
             iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
               var field = data.field; //获取提交的字段
-               $.ajax({
+              $$.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/adduser",
-		                contentType: 'application/json',
+		                contentType: 'application/json;charset=utf-8',
 		                data: function(){
 		                	var dataArray = new Array()
 		                	dataArray[0]=field
 		                	var output={}
 		                	output['data']=dataArray
-		                	req = formatReq(output)
-		                	return JSON.stringify(req)
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(res) {

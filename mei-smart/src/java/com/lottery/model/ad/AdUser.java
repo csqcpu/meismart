@@ -41,7 +41,9 @@ public class AdUser  implements Serializable {
 
     private Integer status;
     
-    public JSONObject perm;
+    private String sex;
+    
+    private JSONObject perm;
 
     public String getUsername() {
         return username;
@@ -177,5 +179,21 @@ public class AdUser  implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+    
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+    
+    public JSONObject getPerm() {
+        return perm;
+    }
+
+    public void setPerm(JSONObject perm) {
+        this.perm = perm;
     }
 }

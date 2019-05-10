@@ -74,26 +74,41 @@ public class AdContentController implements ApplicationContextAware {
 
 	@ResponseBody
 	@RequestMapping(value = "/rest/ad/addcontent")
-	public void addcontent(HttpServletRequest request, HttpServletResponse response) {
+	public void addcontent(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, IOException {
 		JSONObject requestJson;
+		JSONObject jsonObject = new JSONObject();
 		try {
+			String path = request.getRequestURI();
 			requestJson = RequestUtils.getRequestJsonObject(request);
-			JSONArray dataArray = requestJson.getJSONArray("data");
+			String token = requestJson.getString("token");
+			PureUser pureUser = auth.authenticateUser(token);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.INSERT_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			dataStr = new String(dataStr.getBytes(), "utf-8");
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
 			JSONObject jsonRecord = dataArray.getJSONObject(0);
-			AdContent AdContent = JSONObject.toJavaObject(jsonRecord, AdContent.class);
-			int insertCount = AdContentService.insert(AdContent);
-			JSONObject jsonObject = new JSONObject();
+			AdContent adContent = JSONObject.toJavaObject(jsonRecord, AdContent.class);
+			adContent.setStatus(0);
+			adContent.setCreateuser(pureUser.getUsername());
+			adContent.setCreatedt(new Date());
+			int insertCount = AdContentService.insert(adContent);
+			long timeStamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
-			jsonObject.put("count", 0);
+			jsonObject.put("count", insertCount);
+			jsonObject.put("timeStamp", timeStamp);
 			jsonObject.put("data", new ArrayList());
-			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-			response.setContentType("text/json; charset=UTF-8");
-		} catch (IOException e) {
-
-		} finally {
-
+			pureUser.setTimeStmap(timeStamp);
+			auth.setUserInfoByToken(token, pureUser);
+		} catch (Exception e) {
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
 		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
 	}
 
 	@ResponseBody
@@ -133,7 +148,7 @@ public class AdContentController implements ApplicationContextAware {
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
 			PureUser pureUser=auth.authenticateUser(token);
-			String permStr = auth.getUserPermission(token, path, Auth.SELECT_ACTION);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.SELECT_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"), AES.complementKey(pureUser.getPassword(), 16));
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
 			JSONArray dataArray = dataOject.getJSONArray("data");

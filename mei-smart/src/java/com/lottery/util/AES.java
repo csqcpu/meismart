@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class AES {
     //密钥 (需要前端和后端保持一致)
-    private static final String KEY = "abcdefgabcdefg12";  
+    private static final String KEY = "1234561234567890";  
     //算法
     private static final String ALGORITHMSTR = "AES/ECB/PKCS5Padding";
     
@@ -124,7 +124,8 @@ public class AES {
         Cipher cipher = Cipher.getInstance(ALGORITHMSTR);  
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(decryptKey.getBytes(), "AES"));  
         byte[] decryptBytes = cipher.doFinal(encryptBytes);  
-        return new String(decryptBytes);  
+        //return new String(decryptBytes);  
+        return new String(decryptBytes,"utf-8"); 
     }  
   
   
@@ -153,12 +154,24 @@ public class AES {
      * 测试
      */
     public static void main(String[] args) throws Exception {  
-        String content = "123";  
+        String content = "{\"1data\":[{\"username\":\"121212\",\"corp\":\"分别是两个springboot搭建的独立服务端\",\"contact\":\"男\",\"addr\":\"�?\",\"mobile\":\"\",\"telephone\":\"\",\"postcode\":\"\",\"account\":\"\",\"sex\":\"男\"}],\"timestamp\":1557308213848}";  
         System.out.println("加密前：" + content);  
         System.out.println("加密密钥和解密密钥：" + KEY);  
         String encrypt = aesEncrypt(content, KEY);  
         System.out.println("加密后：" + encrypt);  
-        String decrypt = aesDecrypt(encrypt, KEY);  
+        String decrypt = aesDecrypt("RIBk6ejJC/UBEc/5FuOcVd97Hl/RHkdnRQytKNkAhmD9QgotT5zUh2JK1L3vSjDqFloTSH/oo9sJyAUuSoF4BwYEXP55+LB/7RHUEkXLaw2x33tsMd7s5q0eXJzvrQxFGUss+Ske5nvXIH9SJ+YpQtqq4TNeoup+JBhTJmZGTLMKTXloQ8czqUBUT9SsoYoyGPBDe1wwYUFw6VWMD/ejOOtb1eHFe3z1NQ4JmsvC/RjEBKmjfbXk6DA8r3VPwVOgU/WUlnA6l73CfLe+aNkRAYesR/GZFD7kvxZ8GGd+2PU=", KEY);  
         System.out.println("解密后：" + decrypt);  
+        
+     // 使用String的有参构造方法
+        String str = new String("hhhh ty智障%shfu摸淑芬十分uif内服NSF黑男");
+        // 1.以GBK编码方式获取str的字节数组，再用String有参构造函数构造字符串
+        System.out.println(new String(str.getBytes("GBK")));
+        // 2.以UTF-8编码方式获取str的字节数组，再以默认编码构造字符串
+        System.out.println(new String(str.getBytes("UTF-8")));
+        // 2.以UTF-8编码方式获取str的字节数组，再以默认编码构造字符串
+        System.out.println(new String(str.getBytes("UNICODE")));
+        // 2.以UTF-8编码方式获取str的字节数组，再以默认编码构造字符串
+        System.out.println(new String(str.getBytes("UNICODE"),"UTF-8"));
+        System.out.println(new String(str.getBytes(),"UTF-8"));
     } 
 }

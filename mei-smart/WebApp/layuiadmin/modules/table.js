@@ -1,7 +1,8 @@
 /** layui-v2.4.3 MIT License By https://www.layui.com */ ;
-layui.define(["laytpl", "laypage", "layer", "form", "util"], function(e) {
+layui.define(["$$","laytpl", "laypage", "layer", "form", "util"], function(e) {
 	"use strict";
 	var t = layui.$,
+	    $$ = layui.$$,
 		i = layui.laytpl,
 		a = layui.laypage,
 		l = layui.layer,
@@ -253,7 +254,7 @@ layui.define(["laytpl", "laypage", "layer", "form", "util"], function(e) {
 			var r = {};
 			r[l.pageName] = e, r[l.limitName] = a.limit;
 			var d = t.extend(r, a.where);
-			a.contentType && 0 == a.contentType.indexOf("application/json") && (d = JSON.stringify(d)), t.ajax({
+			a.contentType && 0 == a.contentType.indexOf("application/json") && (d = JSON.stringify(d)), $$.ajax({
 				type: a.method || "get",
 				url: a.url,
 				contentType: a.contentType,
