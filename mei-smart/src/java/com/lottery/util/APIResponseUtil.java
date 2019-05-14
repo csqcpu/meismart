@@ -10,8 +10,8 @@ public class APIResponseUtil {
 	public static JSONObject makeErrorJSON(Exception error) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("count", 0);
-			jsonObject.put("data", new ArrayList<>());
+			//jsonObject.put("count", 0);
+			//jsonObject.put("data", new ArrayList<>());
 			JSONObject jsonMsg = (JSONObject) JSON.parse(error.getMessage());
 			jsonObject.put("code", jsonMsg.getInteger("code"));
 			jsonObject.put("msg", jsonMsg.getString("msg"));			

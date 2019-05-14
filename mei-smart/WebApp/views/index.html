@@ -137,7 +137,7 @@
 			<div class="layui-body" id="LAY_app_body">
 				<div class="layadmin-tabsbody-item layui-show">
 					<iframe src="home/console.html" frameborder="0"
-						class="layadmin-iframe"></iframe>
+						class="layadmin-iframe" name="layadmin-iframe"></iframe>
 				</div>
 			</div>
 
@@ -149,6 +149,13 @@
 	<script src="../layuiadmin/layui/layui.js"></script>
 	<script src="../layuiadmin/util/aes.js"></script>  
 	<script>
+	function subgo(href) {
+		var iframe=document.getElementsByName("layadmin-iframe")[0];//父窗口获取iframe子窗口对象
+		var iframew=iframe.contentWindow;//iframe窗口的window对象
+		iframew.location=href;
+		iframew.location.reload(true);
+		iframew.open(href,iframe)
+	}
     function redirect() {
     	  var url=layui.data(layui.setter.tableName).loginurl
     	  location.href = url
@@ -157,7 +164,8 @@
 			base : '../layuiadmin/' //静态资源所在路径
 		}).extend({
 			index : 'lib/index' //主入口模块
-		}).use(['index','element'], function() {
+		}).use(['index','element','rest'], function() {
+			rest = layui.rest
 			function checkLastItem(arr, i) {
 				return arr.length == (i + 1);
 			}
@@ -166,7 +174,7 @@
 				return "<a href=\"javascript:;\" onclick=\"addTab('" + obj.name + "','" + obj.url + "')\" >" + obj.name + "</a>";
 			}
 			//动态菜单
-			layui.admin.req({
+			rest.ajax({
 				//url: layui.setter.base+"json/sys/adusermenus.js",
 				url: layui.setter.base+"../rest/sys/menu",
                 data: function(){
@@ -177,7 +185,7 @@
                 	output['data']=[]
                 	return JSON.stringify(output)
                 }(),
-				method: 'POST',
+                type: 'POST',
 		        contentType:'application/json',
 				success: function(data) {
 					//var jsondata=JSON.parse(data);
@@ -200,15 +208,23 @@
 									strli = strli+ "<dl class=\"layui-nav-child\">"
 									for(var k = 0; k < res.length; k++) {
 										if (res[k].pid==res[j].id){
+											//strli = strli+ "<dd data-name=\""+res[k].name+"\">"
+											//strli = strli+ "<a lay-href=\""+res[k].href+"\">"+res[k].name+"</a>"
+											//strli = strli+ "</dd>"
 											strli = strli+ "<dd data-name=\""+res[k].name+"\">"
 											strli = strli+ "<a lay-href=\""+res[k].href+"\">"+res[k].name+"</a>"
+											//strli = strli+ "<a lay-href=\"javascript:void(0)\" onclick=subgo(\""+res[k].href+"\")>"+res[k].name+"</a>"
 											strli = strli+ "</dd>"
 										}
 									}
 									strli = strli+ "</dl>"
 								}else if (res[j].pid==res[i].id){
+									//strli = strli+ "<dd data-name=\"grid\">"
+									//strli = strli+ "<a lay-href=\""+res[j].href+"\">"+res[j].name+"</a>"
+									//strli = strli+ "<\dd>"
 									strli = strli+ "<dd data-name=\"grid\">"
 									strli = strli+ "<a lay-href=\""+res[j].href+"\">"+res[j].name+"</a>"
+									//strli = strli+ "<a lay-href=\"javascript:void(0)\" onclick=subgo(\""+res[j].href+"\")>"+res[j].name+"</a>"
 									strli = strli+ "<\dd>"
 								}
 							}
@@ -249,7 +265,7 @@
 				layer.msg('新增-' + name)
 			}
 		}
-
+		
 	</script>
 
 	<!-- 百度统计 -->

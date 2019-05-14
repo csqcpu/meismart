@@ -103,9 +103,11 @@
   layui.config({
     base: '../../layuiadmin/' //静态资源所在路径
   }).extend({
-    index: 'lib/index' //主入口模块
-  }).use(['index', 'adcontent', 'table'], function(){
+    index: 'lib/index', //主入口模块
+    rest:'modules/rest'
+  }).use(['rest','index', 'adcontent', 'table'], function(){
     var $ = layui.$
+    var rest = layui.rest
     ,form = layui.form
     ,table = layui.table
     ,data = layui.data
@@ -145,15 +147,14 @@
         	return
         }
           layer.confirm('确定删除吗？', function(index) {
-          $.ajax({
+        	rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/delcontent",
 		                contentType: 'application/json',
 		                data: function(){
 		                	var output={}
 		                	output['data']=checkData
-		                	req = formatReq(output)
-		                	return JSON.stringify(req)
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(data) {
@@ -190,7 +191,7 @@
       ,add: function(){
         layer.open({
           type: 2
-          ,title: '添加广告'
+          ,title: '添加用户'
           ,content: 'contentform.html'
           ,maxmin: true
           ,area: ['500px', '650px']
@@ -202,15 +203,13 @@
 		    var data = checkStatus.data;
 		    if(data.length>0){
 		    	data=data[0]
-		    iframeWin.document.getElementsByName('title')[0].value=data.title||''
-		    iframeWin.document.getElementsByName('type_id')[0].value=data.type_id||''
-		    iframeWin.document.getElementsByName('content')[0].value=data.content||''
-		    iframeWin.document.getElementsByName('url')[0].value=data.url||''
-		    iframeWin.document.getElementsByName('description')[0].value=data.description||''
-		    iframeWin.document.getElementsByName('submitmsg')[0].value=data.submitmsg||''
-		    //iframeWin.document.getElementsByName('postcode')[0].value=data.postcode||''
-		    //iframeWin.document.getElementsByName('account')[0].value=data.account||''
-		    //iframeWin.$("input[name='sex'][type=radio][value='"+data.sex+"']").attr("checked",true);
+			    iframeWin.document.getElementsByName('title')[0].value=data.title||''
+			    iframeWin.document.getElementsByName('type_id')[0].value=data.type_id||''
+			    iframeWin.document.getElementsByName('content')[0].value=data.content||''
+			    iframeWin.document.getElementsByName('url')[0].value=data.url||''
+			    iframeWin.document.getElementsByName('description')[0].value=data.description||''
+			    iframeWin.document.getElementsByName('submitmsg')[0].value=data.submitmsg||''
+		        iframeWin.$("input[name='sex'][type=radio][value='"+data.sex+"']").attr("checked",true);
 		    }
 			}
           ,yes: function(index, layero){
@@ -221,7 +220,7 @@
             //监听提交
             iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
               var field = data.field; //获取提交的字段
-               $.ajax({
+              rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/addcontent",
 		                contentType: 'application/json;charset=utf-8',
@@ -230,8 +229,7 @@
 		                	dataArray[0]=field
 		                	var output={}
 		                	output['data']=dataArray
-		                	req = formatReq(output)
-		                	return JSON.stringify(req)
+		                	return output
 		                }(),
 		                dataType: "json",
 		                success: function(res) {

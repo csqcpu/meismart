@@ -7,20 +7,19 @@ import com.lottery.model.ad.AdContent;
 import com.lottery.model.ad.AdUser;
 
 public interface AdContentMapper {
-    int deleteByPrimaryKey(Integer content_id);
+	int insert(AdContent record);
+	
+	AdContent findById(Integer content_id);
 
-    int insert(AdContent record);
+	List<AdContent> findByParam(Map<String, Object> param);
 
-    int insertSelective(AdContent record);
+	int update(AdContent adContent);
 
-    AdContent selectByPrimaryKey(Integer content_id);
+	int delByIds(List<AdContent> adContentList);
 
-    int updateByPrimaryKeySelective(AdContent record);
+	int submitCheckByIds(List<AdContent> adContentList);
 
-    int updateByPrimaryKey(AdContent record);
-    
-    List<AdContent> findByParam(Map<String,Object> param);
-    
-    int update(AdContent record);
-    int delByContentId(Integer content_id);
+	int checkPassByIds(List<AdContent> adContentList);
+
+	int checkFailByIds(List<AdContent> adContentList);
 }

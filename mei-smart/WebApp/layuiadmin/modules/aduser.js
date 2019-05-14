@@ -1,8 +1,8 @@
 /** layuiAdmin.std-v1.1.0 LPPL License By http://www.layui.com/admin/ */ ;
-layui.define(["$$","table", 'util',"form"], function(e) {
+layui.define(["rest","table", 'util',"form"], function(e) {
 	$ = layui.jquery; 
 	var t = layui.$,
-	$$ = layui.$$,
+	rest = layui.rest,
 	util=layui.util,
 	i = layui.table;
 	layui.form;
@@ -78,7 +78,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 				sort: !0
 			}, {
 				title: "操作",
-				width: 250,
+				width: 280,
 				align: "left",
 				fixed: "right",
 				toolbar: "#table-useradmin-webuser"
@@ -106,7 +106,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 	        layer.close(i);
 			layer.confirm("真的删除行么", function(t) {
 				e.del(), layer.close(t),
-				$$.ajax({
+				rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/deluser",
 		                contentType: 'application/json',
@@ -155,7 +155,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 		else if ("submitcheck" === e.event) layer.confirm("确定提交审核么", function(t) {
 				//e.del(), 
 				layer.close(t),
-				$$.ajax({
+				rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/submitcheckuser",
 		                contentType: 'application/json',
@@ -203,7 +203,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 		else if ("checkuserpass" === e.event) layer.confirm("确定审核通过么", function(t) {
 			//e.del(), 
 			layer.close(t),
-			$$.ajax({
+			rest.ajax({
 	                type: 'POST',
 	                url: layui.setter.base + "../../rest/ad/checkuserpass",
 	                contentType: 'application/json',
@@ -251,7 +251,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 		else if ("checkuserfail" === e.event) layer.confirm("确定审核不通过么", function(t) {
 			//e.del(), 
 			layer.close(t),
-			$$.ajax({
+			rest.ajax({
 	                type: 'POST',
 	                url: layui.setter.base + "../../rest/ad/checkuserfail",
 	                contentType: 'application/json',
@@ -313,7 +313,7 @@ layui.define(["$$","table", 'util',"form"], function(e) {
 						field=t.field;
 						i.reload("LAY-aduser-front-submit"), layer.close(e)
 					}), n.trigger("click")
-					$$.ajax({
+					rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/updateuser",
 		                contentType: 'application/json;charset=utf-8',

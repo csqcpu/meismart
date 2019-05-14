@@ -30,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lottery.model.ad.AdOnline;
@@ -44,10 +45,12 @@ import com.lottery.service.ad.AdContentService;
 import com.lottery.service.ad.AdFeeService;
 import com.lottery.service.ad.AdOnlineService;
 import com.lottery.service.ad.AdPlayHisService;
+import com.lottery.service.auth.Auth;
 import com.lottery.service.sys.SysMenuService;
 import com.lottery.service.sys.SysRoleService;
 import com.lottery.service.ad.AdContentService;
 import com.lottery.util.AES;
+import com.lottery.util.APIResponseUtil;
 import com.lottery.util.RequestUtils;
 
 import redis.clients.jedis.Transaction;
@@ -65,7 +68,7 @@ public class SystemController implements ApplicationContextAware {
 	@Autowired
 	private AdContentService AdContentService;
 	@Autowired
-	private AdPlayHisService adPlayHisService;
+	private Auth auth;
 	@Autowired
 	MybatisRedisCache mybatisRedisCache;
 	ApplicationContext applicationContext;
@@ -73,47 +76,47 @@ public class SystemController implements ApplicationContextAware {
 
 	@ResponseBody
 	@RequestMapping(value = "/rest/sys/menu")
-	public void addcontent(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, IOException {
+	public void addcontent(HttpServletRequest request, HttpServletResponse response)
+			throws UnsupportedEncodingException, IOException {
 		JSONObject requestJson;
 		JSONObject jsonObject = new JSONObject();
 		try {
+			String path = request.getRequestURI();
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
-			PureUser pureUser = (PureUser) mybatisRedisCache.getObject(token+":pureuser");
-			if(pureUser==null){
-				throw new Exception("用户没有登录");
-			}
+			PureUser pureUser = auth.authenticateUser(token);
+			// String permStr = auth.getUserPermissionByAction(token, path,
+			// Auth.INSERT_ACTION);
+			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
+					AES.complementKey(pureUser.getPassword(), 16));
+			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
+			JSONArray dataArray = dataOject.getJSONArray("data");
+			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
+
 			SysRole sysRole = sysRoleService.findByRoleId(pureUser.getRole_id());
 			String[] MenuIds = sysRole.getMean().split(",");
-			Integer[] MenuIdss= new Integer[MenuIds.length];
-			for(int i=0;i<MenuIds.length;i++){
-				MenuIdss[i]=Integer.valueOf(MenuIds[i]);
+			Integer[] MenuIdss = new Integer[MenuIds.length];
+			for (int i = 0; i < MenuIds.length; i++) {
+				MenuIdss[i] = Integer.valueOf(MenuIds[i]);
 			}
-			Map<String,Object> param = new HashMap<String,Object>();
+			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("MenuIds", MenuIdss);
-			List<SysMenu> menuList= sysMenuService.findByMenuIds(param);
+			List<SysMenu> menuList = sysMenuService.findByMenuIds(param);
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", 0);
 			jsonObject.put("data", menuList);
-//			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-//			response.setContentType("text/json; charset=UTF-8");
+
+			JSONArray outdataArray = jsonObject.getJSONArray("data");
+			String outdataStr = JSON.toJSONString(outdataArray);
+			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
+			jsonObject.put("data", DataEncrypt);
 		} catch (Exception e) {
-			jsonObject.put("code", 1001);
-			jsonObject.put("msg", e.getMessage());
-			jsonObject.put("count", 0);
-			jsonObject.put("data", new ArrayList());
-//			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-//			response.setContentType("text/json; charset=UTF-8");
-		} finally {
-			response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
-			response.setContentType("text/json; charset=UTF-8");
+			jsonObject = APIResponseUtil.makeErrorJSON(e);
 		}
+		response.getOutputStream().write(jsonObject.toString().getBytes("UTF-8"));
+		response.setContentType("text/json; charset=UTF-8");
 	}
-	
-
-
-
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

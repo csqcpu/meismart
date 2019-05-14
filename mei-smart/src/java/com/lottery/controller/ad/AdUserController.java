@@ -159,7 +159,7 @@ public class AdUserController implements ApplicationContextAware {
 			requestJson = RequestUtils.getRequestJsonObject(request);
 			String token = requestJson.getString("token");
 			PureUser pureUser = auth.authenticateUser(token);
-			String permStr = auth.getUserPermissionByAction(token, path, Auth.INSERT_ACTION);
+			String permStr = auth.getUserPermissionByAction(token, path, Auth.UPDATE_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
 					AES.complementKey(pureUser.getPassword(), 16));
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);

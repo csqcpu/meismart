@@ -19,7 +19,7 @@
     <div class="layadmin-user-login-main">
       <div class="layadmin-user-login-box layadmin-user-login-header">
         <h2>惠多智能管理系统</h2>
-        <p>广告客户</p>
+        <p>广告客户登录</p>
       </div>
       <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
         <div class="layui-form-item">
@@ -63,7 +63,7 @@
     
     <div class="layui-trans layadmin-user-login-footer">
       
-      <p>版权所有  ©2018-2019 海南惠多智能科技有限公司 <a href="http://www.没smart.com.cn/" target="_blank">meismart.com.cn</a></p>
+      <p>© 2018 <a href="http://www.layui.com/" target="_blank">layui.com</a></p>
       <p>
         <span><a href="http://www.layui.com/admin/#get" target="_blank">获取授权</a></span>
         <span><a href="http://www.layui.com/admin/pro/" target="_blank">在线演示</a></span>
@@ -85,9 +85,9 @@
     </div>-->
     
   </div>
-  <script src="../../layuiadmin/util/jquery.min.js"></script>
+  <!--<script src="../../layuiadmin/util/jquery.min.js"></script> -->
   <script src="../../layuiadmin/layui/layui.js"></script>  
-  <script src="../../layuiadmin/util/md5.js"></script>  
+  <!--<script src="../../layuiadmin/util/md5.js"></script>-->  
   <script src="../../layuiadmin/util/aes.js"></script>  
   <script>
   function encrypt(word,password){
@@ -125,42 +125,36 @@
     ,search = router.search;
 
     form.render();
-
     //提交
     form.on('submit(LAY-user-login-submit)', function(obj){
-    
       //请求登入接口
       admin.req({
- //       url: layui.setter.base + 'json/user/login.js' //实际使用请改成服务端真实接口
         url: '../../../rest/ad/userlogin' //实际使用请改成服务端真实接口
- //       ,data: JSON.stringify(obj.field)
         ,data:function(){
-        	//var data={}
-        	//data['password']=encrypt(obj.field.username);
-         	//var arr={};
-        	//arr['username']=obj.field.username;
-        	//arr['data']=data;
-        	obj.field['password']=encrypt(obj.field.password,obj.field.password);
-        	//obj.field['password']=$.md5(obj.field.password);
-        	return JSON.stringify(obj.field);}()
+        	var reqdata={}
+        	reqdata["username"]=obj.field.username
+        	reqdata["password"]=encrypt(obj.field.password,obj.field.password)
+        	return JSON.stringify(reqdata)
+        	}()
         ,method:'post'
         ,contentType:'application/json'
         ,done: function(res){
         
-            //请求成功后，写入 access_token
-            layui.data(setter.tableName, {
-              //key: setter.request.tokenName
-              //,value: res.data.token
+          layui.data(setter.tableName, {
               key:'token',
               value:res.token
             });
-            layui.data(setter.tableName, {
+          layui.data(setter.tableName, {
                 key:'timestamp',
                 value:res.timestamp
               });
-            layui.data(setter.tableName, {
+          layui.data(setter.tableName, {
+              key:'password',
+              value:obj.field.password
+            });
+          layui.data(setter.tableName, {
                 key:'loginurl',
-                value:'../ad/login.html'
+                value:layui.setter.base+'../ad/login.html'
               });
           
           //登入成功的提示与跳转
@@ -175,6 +169,7 @@
       });
       
     });
+    
    
   });
   </script>

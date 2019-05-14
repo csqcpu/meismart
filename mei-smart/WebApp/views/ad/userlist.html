@@ -96,10 +96,10 @@
     base: '../../layuiadmin/' //静态资源所在路径
   }).extend({
     index: 'lib/index', //主入口模块
-    $$:'modules/$$'
-  }).use(['$$','index', 'aduser', 'table'], function(){
+    rest:'modules/rest'
+  }).use(['rest','index', 'aduser', 'table'], function(){
     var $ = layui.$
-    var $$ = layui.$$
+    var rest = layui.rest
     ,form = layui.form
     ,table = layui.table
     ,data = layui.data
@@ -139,7 +139,7 @@
         	return
         }
           layer.confirm('确定删除吗？', function(index) {
-        	$$.ajax({
+        	rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/deluser",
 		                contentType: 'application/json',
@@ -214,7 +214,7 @@
             //监听提交
             iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
               var field = data.field; //获取提交的字段
-              $$.ajax({
+              rest.ajax({
 		                type: 'POST',
 		                url: layui.setter.base + "../../rest/ad/adduser",
 		                contentType: 'application/json;charset=utf-8',
