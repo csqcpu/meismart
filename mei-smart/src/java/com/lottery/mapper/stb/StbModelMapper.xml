@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.mapper.stb.StbModelMapper">
+  <resultMap id="BaseResultMap" type="com.lottery.model.stb.StbModel">
+    <id column="stb_id" jdbcType="INTEGER" property="stb_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="resolution" jdbcType="VARCHAR" property="resolution" />
+    <result column="createuser" jdbcType="VARCHAR" property="createuser" />
+    <result column="createdt" jdbcType="TIMESTAMP" property="createdt" />
+    <result column="checkuser" jdbcType="VARCHAR" property="checkuser" />
+    <result column="checkdt" jdbcType="TIMESTAMP" property="checkdt" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    stb_id, name, model, resolution, createuser, createdt, checkuser, checkdt, status
+  </sql>
+  <select id="findAll" resultMap="BaseResultMap">
+    select * from stbmodel
+  </select>
+ 
+ </mapper>

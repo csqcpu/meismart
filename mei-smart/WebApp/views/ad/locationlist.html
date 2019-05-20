@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 网站用户</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+  <div class="layui-fluid">
+    <div class="layui-card">
+      <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">编号</label>
+            <div class="layui-input-block">
+              <input type="text" name="content_id" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">盒子型号</label>
+            <div class="layui-input-block">
+              <input type="text" name="stb_id" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">广告位名称</label>
+            <div class="layui-input-block">
+              <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">广告类型</label>
+            <div class="layui-input-block">
+              <input type="text" name="type_id" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">审核状态</label>
+            <div class="layui-input-block">
+              <select name="status">
+                <option value="">全部</option>
+                <option value="0">待审批</option>
+                <option value="1">审批中</option>
+                <option value="2">未通过</option>
+                <option value="3">正常</option>
+              </select>
+            </div>
+          </div>
+          <div class="layui-inline">
+            <button class="layui-btn layuiadmin-btn-locationadmin" lay-submit lay-filter="LAY-adlocation-front-search">
+              <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="layui-card-body">
+        <div style="padding-bottom: 10px;">
+          <button class="layui-btn layuiadmin-btn-locationadmin" data-type="batchdel">删除</button>
+          <button class="layui-btn layuiadmin-btn-locationadmin" data-type="add">添加</button>
+        </div>
+        
+        <table id="LAY-adlocation-manage" lay-filter="LAY-adlocation-manage"></table>
+        <script type="text/html" id="imgTpl"> 
+          <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
+        </script> 
+        <script type="text/html" id="table-useradmin-webuser">
+           <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="play"><i class="layui-icon layui-icon-edit"></i>预览</a>
+          {{#  if(d.perm.eidtenable){ }}
+          <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+          {{#  } }}
+          {{#  if(d.perm.delenable){ }}
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+          {{#  } }}
+          {{#  if(d.perm.commitenable){ }}
+          <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="submitcheck"><i class="layui-icon layui-icon-right"></i>提交审核</a>
+          {{#  } }}
+          {{#  if(d.perm.checkenable){ }}
+          <a class="layui-btn layui-btn layui-btn-xs" lay-event="checkuserpass"><i class="layui-icon layui-icon-ok"></i>审核通过</a>
+          <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="checkuserfail"><i class="layui-icon layui-icon-close"></i>审核不通过</a>
+          {{#  } }}
+        </script>
+        <script type="text/html" id="buttonTpl">
+          {{#  if(d.status == 3){ }}
+           正常
+          {{#  } else if(d.status == 2){ }}
+            未通过
+          {{#  } else if(d.status == 1){ }}
+            审核中
+          {{#  } else{ }}
+           待审核
+          {{#  } }}
+        </script>
+        <script type="text/html" id="type_idTpl">
+          {{#  if(d.type_id == 0){ }}
+           视频
+          {{#  } else if(d.type_id == 1){ }}
+            图片
+          {{#  } else if(d.type_id == 2){ }}
+           文字
+          {{#  } }}
+        </script>
+        <script src="https://api.html5media.info/1.1.8/html5media.min.js"></script>
+        <script type="text/html" id="videoTpl">
+          <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="play"><i class="layui-icon layui-icon-edit"></i>{{ d.url }}</a>
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="../../layuiadmin/layui/layui.js"></script> 
+  <script src="../../layuiadmin/util/aes.js"></script>  
+  <script>
+  layui.config({
+    base: '../../layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index', //主入口模块
+    rest:'modules/rest'
+  }).use(['rest','index', 'adlocation', 'table'], function(){
+    var $ = layui.$
+    var rest = layui.rest
+    ,form = layui.form
+    ,table = layui.table
+    ,data = layui.data
+    ,setter=layui.setter;
+    
+    //监听搜索
+    form.on('submit(LAY-adlocation-front-search)', function(data){
+      var field = data.field;
+      
+      //执行重载
+      table.reload('LAY-adlocation-manage', {
+        where: field
+      });
+    });
+  
+    //事件
+    var active = {
+      batchdel: function(){
+        var checkStatus = table.checkStatus('LAY-adlocation-manage')
+        ,checkData = checkStatus.data; //得到选中的数据
+
+        if(checkData.length === 0){
+          return layer.msg('请选择数据');
+        }
+        
+        layer.prompt({
+          formType: 1
+          ,title: '敏感操作，请验证密码'
+        }, function(value, index){
+          layer.close(index);
+          if(value!=data(setter.tableName).password){
+        	layer.msg('密码错误！', {
+                offset: '15px'
+                ,icon: 2
+                ,time: 1000
+              })
+        	return
+        }
+          layer.confirm('确定删除吗？', function(index) {
+        	rest.ajax({
+		                type: 'POST',
+		                url: layui.setter.base + "../../rest/ad/dellocation",
+		                contentType: 'application/json',
+		                data: function(){
+		                	var output={}
+		                	output['data']=checkData
+		                	return output
+		                }(),
+		                dataType: "json",
+		                success: function(data) {
+		                    if(data.code==0){
+		                        layer.msg('批量删除广告位成功', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                            table.reload('LAY-adlocation-manage');
+		                        });
+		                    }
+		                    else{
+		                        layer.msg('批量删除广告位失败:'+data.msg, {
+			                          offset: '15px'
+			                          ,icon: 2
+			                          ,time: 1000
+			                        }, function(){
+			                        });
+		                    }
+		                },
+		                error: function(e, t) {
+	                        layer.msg('批量删除广告位失败：', {
+		                          offset: '15px'
+		                          ,icon: 2
+		                          ,time: 1000
+		                        }, function(){
+		                        });
+		                }
+		            })
+          });
+        });
+      }
+      ,add: function(){
+        layer.open({
+          type: 2
+          ,title: '添加广告位'
+          ,content: 'locationform.html'
+          ,maxmin: true
+          ,area: ['500px', '650px']
+          ,btn: ['确定', '取消']
+		,success: function(layero, index) {
+		    var body = layer.getChildFrame('body', index);
+		    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+		    var checkStatus = table.checkStatus("LAY-adlocation-manage");
+		    var data = checkStatus.data;
+		    if(data.length>0){
+		    	data=data[0]
+                iframeWin.loadDepartmentName(data.stb_id)
+                //iframeWin.$("select[name='stb_id']").find('option:eq('+data.stb_id+')').attr('selected','selected');
+                iframeWin.$("select[name='type_id']").find('option[value='+data.type_id+']').attr('selected','selected');
+                iframeWin.document.getElementsByName('name')[0].value = data.name || ''
+                iframeWin.document.getElementsByName('imageurl')[0].value = data.imageurl || ''
+                iframeWin.document.getElementsByName('description')[0].value = data.description || ''
+		    }else
+		    	iframeWin.loadDepartmentName('')
+			}
+          ,yes: function(index, layero){
+            var iframeWindow = window['layui-layer-iframe'+ index]
+            ,submitID = 'LAY-adlocation-front-submit'
+            ,submit = layero.find('iframe').contents().find('#'+ submitID);
+
+            //监听提交
+            iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+              var field = data.field; //获取提交的字段
+              rest.ajax({
+		                type: 'POST',
+		                url: layui.setter.base + "../../rest/ad/addlocation",
+		                contentType: 'application/json;charset=utf-8',
+		                data: function(){
+		                	var dataArray = new Array()
+		                	dataArray[0]=field
+		                	var output={}
+		                	output['data']=dataArray
+		                	return output
+		                }(),
+		                dataType: "json",
+		                success: function(res) {
+		                    //layui.data(setter.tableName, {
+		                    //    key:'timestamp',
+		                     //   value:res.timestamp
+		                    //  })
+		                    if(res.code==0){
+		                        layer.msg('添加广告位成功', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                            table.reload('LAY-adlocation-manage');
+		                        });
+		                    }
+		                    else{
+		                        layer.msg('添加广告位失败:'+res.msg, {
+			                          offset: '15px'
+			                          ,icon: 1
+			                          ,time: 1000
+			                        }, function(){
+			                        });
+		                    }
+		                },
+		                error: function(e, t) {
+	                        layer.msg('添加广告位失败：', {
+		                          offset: '15px'
+		                          ,icon: 1
+		                          ,time: 1000
+		                        }, function(){
+		                        });
+		                }
+		            })
+              layer.close(index); //关闭弹层
+            });  
+            
+            submit.trigger('click');
+          }
+        }); 
+      }
+    };
+    
+    $('.layui-btn.layuiadmin-btn-locationadmin').on('click', function(){
+      var type = $(this).data('type');
+      active[type] ? active[type].call(this) : '';
+    });
+  });
+  </script>
+</body>
+</html>

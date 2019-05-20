@@ -1,0 +1,104 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 网站用户 iframe 框</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+
+  <div class="layui-form" lay-filter="layuiadmin-form-locationadmin" id="layuiadmin-form-locationadmin" style="padding: 20px 0 0 0;">
+    <div class="layui-form-item">
+      <label class="layui-form-label">盒子型号</label>
+      <div class="layui-input-inline">
+              <select name="stb_id">
+              </select>        
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">广告位名称</label>
+      <div class="layui-input-inline">
+        <input type="text" name="name" lay-verify="name" placeholder="请输入广告标题" autocomplete="off" class="layui-input">
+      </div>
+    </div>    
+    <div class="layui-form-item">
+      <label class="layui-form-label">广告类型</label>
+      <div class="layui-input-inline">
+              <select name="type_id">
+                <option value="0">视频</option>
+                <option value="1">图片</option>
+                <option value="2">文字</option>
+              </select>     
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">说明</label>
+      <div class="layui-input-inline">
+        <input type="text" name="description" lay-verify="description" placeholder="请输入广告地址" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">示意图片</label>
+      <div class="layui-input-inline">
+        <input type="text" name="imageurl" lay-verify="imageurl" placeholder="请输入广告描述" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+      <div class="layui-input-inline">
+        <input type="text" name="location_id" lay-verify="location_id" placeholder="请输入地址" autocomplete="off" class="layui-input">
+      </div>
+    </div>     
+    <div class="layui-form-item layui-hide">
+      <input type="button" lay-submit lay-filter="LAY-adcontent-front-submit" id="LAY-adcontent-front-submit" value="确认">
+    </div>
+  </div>
+  <script src="../../layuiadmin/util/jquery.min.js"></script>
+  <script src="../../layuiadmin/layui/layui.js"></script>  
+  <script>
+  function loadDepartmentName(stb_id) {
+      $.ajax({
+          url: "/rest/stb/stbmodel",
+          type: "Post",
+          contentType: "application/json",
+          dataType: "json",
+      	success: function(data){
+      			data = data.data;
+      			var selectObj = $("select[name='stb_id']");
+      			var nameOpt = "<option value='' selected='selected'>--请选择--</option>";
+      			//selectObj.append(nameOpt);
+      			for(var i=0;i<data.length;i++) {
+      					nameOpt+="<option value='"+data[i].stb_id+"' >"+data[i].name+"</option>"
+      					//selectObj.append(nameOpt)
+      			}
+      			selectObj.append(nameOpt)
+      			selectObj.find('option[value='+stb_id+']').attr('selected','selected');
+      		},
+          error: function () {
+              alert("Error");
+          }
+      });
+};
+
+layui.config({
+    base: '../../layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form', 'upload'], function(){
+    var $ = layui.$
+    ,form = layui.form
+    ,upload = layui.upload ;
+    
+    //$(document).ready(function(){
+  	//  loadDepartmentName();
+    //});
+
+
+  })
+  </script>
+</body>
+</html>
