@@ -24,6 +24,12 @@ layui.define(["rest","table", 'util',"form"], function(e) {
 // 	    },
         contentType:'application/json',
         toolbar: '#test-table-toolbar-toolbarDemo',
+        done:function(res){
+        	if(res.perm.insert==null || res.perm.insert=='')
+        	    t("[data-type='add']").addClass("layui-btn layuiadmin-btn-useradmin layui-btn-disabled").prop("disabled" , true);
+        	if(res.perm.delete==null || res.perm.delete=='')
+        		t("[data-type='batchdel']").addClass("layui-btn layuiadmin-btn-useradmin layui-btn-disabled").prop("disabled" , true);
+        },
 		cols: [
 			[{
 				type: "checkbox",

@@ -1,17 +1,25 @@
 package com.lottery.mapper.ad;
 
+import java.util.List;
+import java.util.Map;
+
+import com.lottery.model.ad.AdLocation;
 import com.lottery.model.ad.AdLocation;
 
 public interface AdLocationMapper {
-    int deleteByPrimaryKey(Integer location_id);
+	int insert(AdLocation record);
+	
+	AdLocation findById(Integer content_id);
 
-    int insert(AdLocation record);
+	List<AdLocation> findByParam(Map<String, Object> param);
 
-    int insertSelective(AdLocation record);
+	int update(AdLocation adLocation);
 
-    AdLocation selectByPrimaryKey(Integer location_id);
+	int delByIds(List<AdLocation> adLocationList);
 
-    int updateByPrimaryKeySelective(AdLocation record);
+	int submitCheckByIds(List<AdLocation> adLocationList);
 
-    int updateByPrimaryKey(AdLocation record);
+	int checkPassByIds(List<AdLocation> adLocationList);
+
+	int checkFailByIds(List<AdLocation> adLocationList);
 }

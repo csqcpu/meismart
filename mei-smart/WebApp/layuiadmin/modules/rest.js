@@ -22,10 +22,20 @@ layui.define(['jquery'], function(exports){
                 	return JSON.stringify(JsonRequest)
                 }(),
                 success: function(res){
+                	if(res[layui.setter.response.statusName]==layui.setter.response.statusCode.logout){
+                		parent.redirect()
+                		return
+                	}
                    if(res.data!=null){
                 	   var data = decrypt(res.data,layui.data(layui.setter.tableName).password)
                 	   data = JSON.parse(data)
              		   res.data=data
+                   }
+                   if(res.perm!=null){
+          	          layui.data(layui.setter.tableName, {
+       	                key:'perm',
+       	                value:res.perm
+       	              });
                    }
          		   if(res.timestamp!=null){
          	          layui.data(layui.setter.tableName, {

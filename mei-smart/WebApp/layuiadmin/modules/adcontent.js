@@ -12,6 +12,12 @@ function(e) {
         url: layui.setter.base + "../../rest/ad/getcontent",
         method: 'post',
         contentType: 'application/json',
+        done:function(res){
+        	if(res.perm.insert==null || res.perm.insert=='')
+        	    t("[data-type='add']").addClass("layui-btn layuiadmin-btn-useradmin layui-btn-disabled").prop("disabled" , true);
+        	if(res.perm.delete==null || res.perm.delete=='')
+        		t("[data-type='batchdel']").addClass("layui-btn layuiadmin-btn-useradmin layui-btn-disabled").prop("disabled" , true);
+        },
         cols: [[{
             type: "checkbox",
             fixed: "left"
@@ -28,7 +34,8 @@ function(e) {
         },
         {
             field: "type_id",
-            title: "类型"
+            title: "类型",
+            templet: "#type_idTpl",
         },
         {
             field: "content",
@@ -215,7 +222,9 @@ function(e) {
                     var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
                     iframeWin.document.getElementsByName('content_id')[0].value = e.data.content_id || ''
                     iframeWin.document.getElementsByName('title')[0].value = e.data.title || ''
-                    iframeWin.document.getElementsByName('type_id')[0].value = e.data.type_id || ''
+                    //iframeWin.document.getElementsByName('type_id')[0].value = e.data.type_id || ''
+                    //iframeWin.$("select[name='type_id'][option='"+e.data.type_id+"']").attr("selected","selected");
+                    iframeWin.$("select[name='type_id']").find('option[value='+e.data.type_id+']').attr('selected','selected');
                     iframeWin.document.getElementsByName('content')[0].value = e.data.content || ''
                     iframeWin.document.getElementsByName('url')[0].value = e.data.url || ''
                     iframeWin.document.getElementsByName('description')[0].value = e.data.description || ''

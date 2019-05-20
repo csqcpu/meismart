@@ -50,44 +50,44 @@
     from adcontent
     	<where>
 		     1=1
-			<if test="username != null">
-				and username like '%' #{username,jdbcType=VARCHAR} '%'
+			<if test="content_id != null">
+				and content_id like concat(concat("%",#{content_id,jdbcType=INTEGER}),"%")
 			</if>		     
-			<if test="password != null">
-				and password like '%' #{password,jdbcType=VARCHAR}'%'
+			<if test="title != null">
+				and title like "%"#{title,jdbcType=VARCHAR} "%"
 			</if>
-			<if test="smscode != null">
-				and smscode = #{smscode,jdbcType=VARCHAR} '%'
+			<if test="description != null">
+				and description = #{description,jdbcType=VARCHAR} "%"
 			</if>
-			<if test="corp != null">
-				and corp like '%' #{corp,jdbcType=VARCHAR} '%'
+			<if test="status != null">
+				and status = #{status,jdbcType=INTEGER} 
 			</if>
 			<if test="addr != null">
-				and addr like '%' #{addr,jdbcType=VARCHAR} '%'
+				and addr like "%" #{addr,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="postcode != null">
-				and postcode like '%' {postcode,jdbcType=VARCHAR} '%'
+				and postcode like "%" {postcode,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="contact != null">
-				and contact like '%' #{contact,jdbcType=VARCHAR} '%'
+				and contact like "%" #{contact,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="mobile != null">
-				and mobile like '%' #{mobile,jdbcType=VARCHAR} '%'
+				and mobile like "%" #{mobile,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="telephone != null">
-				and telephone like '%' #{telephone,jdbcType=VARCHAR} '%'
+				and telephone like "%" #{telephone,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="account != null">
-				and account like '%' #{account,jdbcType=INTEGER} '%'
+				and account like "%" #{account,jdbcType=INTEGER} "%"
 			</if>
 			<if test="pay_id != null">
-				and pay_id like '%' #{pay_id,jdbcType=INTEGER} '%'
+				and pay_id like "%" #{pay_id,jdbcType=INTEGER} "%"
 			</if>
 			<if test="createdt != null">
-				and createdt like '%' #{createdt,jdbcType=TIMESTAMP} '%'
+				and createdt like "%" #{createdt,jdbcType=TIMESTAMP} "%"
 			</if>
 			<if test="createuser != null">
-				and createuser like '%' #{createuser,jdbcType=VARCHAR} '%'
+				and createuser like "%" #{createuser,jdbcType=VARCHAR} "%"
 			</if>
 			<if test="perm != null">
 				and createuser = #{perm,jdbcType=VARCHAR}

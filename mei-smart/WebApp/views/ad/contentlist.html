@@ -18,30 +18,32 @@
       <div class="layui-form layui-card-header layuiadmin-card-header-auto">
         <div class="layui-form-item">
           <div class="layui-inline">
-            <label class="layui-form-label">ID</label>
+            <label class="layui-form-label">编号</label>
             <div class="layui-input-block">
-              <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="content_id" placeholder="请输入" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
-            <label class="layui-form-label">用户名</label>
+            <label class="layui-form-label">广告主题</label>
             <div class="layui-input-block">
-              <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
-            <label class="layui-form-label">邮箱</label>
+            <label class="layui-form-label">广告描述</label>
             <div class="layui-input-block">
-              <input type="text" name="email" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="description" placeholder="请输入" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
-            <label class="layui-form-label">性别</label>
+            <label class="layui-form-label">审核状态</label>
             <div class="layui-input-block">
-              <select name="sex">
-                <option value="0">不限</option>
-                <option value="1">男</option>
-                <option value="2">女</option>
+              <select name="status">
+                <option value="">全部</option>
+                <option value="0">待审批</option>
+                <option value="1">审批中</option>
+                <option value="2">未通过</option>
+                <option value="3">正常</option>
               </select>
             </div>
           </div>
@@ -88,6 +90,15 @@
             审核中
           {{#  } else{ }}
            待审核
+          {{#  } }}
+        </script>
+        <script type="text/html" id="type_idTpl">
+          {{#  if(d.type_id == 0){ }}
+           视频
+          {{#  } else if(d.type_id == 1){ }}
+            图片
+          {{#  } else if(d.type_id == 2){ }}
+           文字
           {{#  } }}
         </script>
         <script src="https://api.html5media.info/1.1.8/html5media.min.js"></script>
@@ -204,7 +215,7 @@
 		    if(data.length>0){
 		    	data=data[0]
 			    iframeWin.document.getElementsByName('title')[0].value=data.title||''
-			    iframeWin.document.getElementsByName('type_id')[0].value=data.type_id||''
+			    iframeWin.$("select[name='type_id']").find('option[value='+data.type_id+']').attr('selected','selected');
 			    iframeWin.document.getElementsByName('content')[0].value=data.content||''
 			    iframeWin.document.getElementsByName('url')[0].value=data.url||''
 			    iframeWin.document.getElementsByName('description')[0].value=data.description||''
@@ -233,10 +244,10 @@
 		                }(),
 		                dataType: "json",
 		                success: function(res) {
-		                    layui.data(setter.tableName, {
-		                        key:'timestamp',
-		                        value:res.timestamp
-		                      })
+		                    //layui.data(setter.tableName, {
+		                    //    key:'timestamp',
+		                     //   value:res.timestamp
+		                    //  })
 		                    if(res.code==0){
 		                        layer.msg('添加用户成功', {
 		                          offset: '15px'

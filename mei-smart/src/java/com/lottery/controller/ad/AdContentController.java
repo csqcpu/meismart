@@ -88,7 +88,6 @@ public class AdContentController implements ApplicationContextAware {
 			String permStr = auth.getUserPermissionByAction(token, path, Auth.INSERT_ACTION);
 			String dataStr = AES.aesDecrypt(requestJson.getString("data"),
 					AES.complementKey(pureUser.getPassword(), 16));
-			dataStr = new String(dataStr.getBytes(), "utf-8");
 			JSONObject dataOject = (JSONObject) JSONObject.parse(dataStr);
 			JSONArray dataArray = dataOject.getJSONArray("data");
 			auth.authenticateTimeStamp(token, dataOject.getLong("timestamp").longValue());
@@ -99,13 +98,13 @@ public class AdContentController implements ApplicationContextAware {
 			adContent.setCreateuser(pureUser.getUsername());
 			adContent.setCreatedt(new Date());
 			int insertCount = AdContentService.insert(adContent);
-			long timeStamp = System.currentTimeMillis();
+			long timestamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", insertCount);
-			jsonObject.put("timeStamp", timeStamp);
-			jsonObject.put("data", new ArrayList());
-			pureUser.setTimeStmap(timeStamp);
+			jsonObject.put("timestamp", timestamp);
+			//jsonObject.put("data", new ArrayList());
+			pureUser.setTimeStmap(timestamp);
 			auth.setUserInfoByToken(token, pureUser);
 		} catch (Exception e) {
 			jsonObject = APIResponseUtil.makeErrorJSON(e);
@@ -133,7 +132,17 @@ public class AdContentController implements ApplicationContextAware {
 			int page = requestJson.getInteger("page");
 			int limit = requestJson.getInteger("limit");
 
+			AdContent adContent = JSONObject.toJavaObject(requestJson, AdContent.class);
 			Map<String, Object> paramMap = new HashMap<String, Object>();
+			if (adContent.getContent_id() != null)
+				paramMap.put("content_id", adContent.getContent_id());
+			if (adContent.getTitle() != null && !adContent.getTitle().isEmpty())
+				paramMap.put("title", adContent.getTitle());
+			if (adContent.getDescription() != null && !adContent.getDescription().isEmpty())
+				paramMap.put("description", adContent.getDescription());
+			if (adContent.getStatus() != null)
+				paramMap.put("status", adContent.getStatus());
+			// 用户权限
 			if (permStr != null && permStr.equals("self"))
 				paramMap.put("perm", pureUser.getUsername());
 			List<AdContent> AdContentList = adContentService.findByParam(paramMap);
@@ -151,10 +160,12 @@ public class AdContentController implements ApplicationContextAware {
 						auth.getRolePermission(token, path, a.getCreateuser(), a.getStatus(), Auth.CHECK_ACTION));
 				a.setPerm(permObject);
 			}
+			Perm userPerm = auth.getUserPermission(token, path);
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", AdContentList.size());
 			jsonObject.put("data", AdContentList);
+			jsonObject.put("perm", userPerm);
 
 			JSONArray outdataArray = jsonObject.getJSONArray("data");
 			String outdataStr = dataArray.toJSONString(outdataArray);
@@ -189,7 +200,7 @@ public class AdContentController implements ApplicationContextAware {
 				JSONObject o = dataArray.getJSONObject(i);
 				AdContent adContent = JSONObject.toJavaObject(o, AdContent.class);
 				AdContent adContentInDB = adContentService.findById(adContent.getContent_id());
-				boolean deleteEnable = auth.getRolePermission(token, path, "", adContentInDB.getStatus(),
+				boolean deleteEnable = auth.getRolePermission(token, path, adContentInDB.getCreateuser(), adContentInDB.getStatus(),
 						Auth.DELETE_ACTION);
 				if (deleteEnable)
 					adContentList.add(adContent);
@@ -244,7 +255,7 @@ public class AdContentController implements ApplicationContextAware {
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", updateCount);
 			jsonObject.put("timestamp", timestamp);
-			// jsonObject.put("data", new ArrayList());
+
 			pureUser.setTimeStmap(timestamp);
 			auth.setUserInfoByToken(token, pureUser);
 		} catch (Exception e) {
@@ -282,13 +293,17 @@ public class AdContentController implements ApplicationContextAware {
 					adContentList.add(JSONObject.toJavaObject(o, AdContent.class));
 			}
 			int submitNum = adContentService.submitCheckByIds(adContentList);
+			long timestamp = System.currentTimeMillis();
 			Perm userPerm = auth.getUserPermission(token, path);
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", submitNum);
 			jsonObject.put("data", new ArrayList());
 			jsonObject.put("perm", userPerm);
+			jsonObject.put("timestamp", timestamp);
 
+			pureUser.setTimeStmap(timestamp);
+			auth.setUserInfoByToken(token, pureUser);
 			JSONArray outdataArray = jsonObject.getJSONArray("data");
 			String outdataStr = JSON.toJSONString(outdataArray);
 			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
@@ -321,7 +336,8 @@ public class AdContentController implements ApplicationContextAware {
 			for (int i = 0; i < dataArray.size(); i++) {
 				JSONObject o = dataArray.getJSONObject(i);
 				AdContent adContent = JSONObject.toJavaObject(o, AdContent.class);
-				boolean checkEnable = auth.getRolePermission(token, path, "", adContent.getStatus(), Auth.CHECK_ACTION);
+				AdContent adContentInDB = adContentService.findById(adContent.getContent_id());
+				boolean checkEnable = auth.getRolePermission(token, path, adContentInDB.getCheckuser(), adContentInDB.getStatus(), Auth.CHECK_ACTION);
 				if (checkEnable) {
 					adContent.setCheckuser(pureUser.getUsername());
 					adContent.setCheckdt(new Date());
@@ -329,13 +345,17 @@ public class AdContentController implements ApplicationContextAware {
 				}
 			}
 			int passNum = adContentService.checkPassByIds(adContentList);
+			long timestamp = System.currentTimeMillis();
 			Perm userPerm = auth.getUserPermission(token, path);
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", passNum);
 			jsonObject.put("data", new ArrayList());
 			jsonObject.put("perm", userPerm);
-
+			jsonObject.put("timestamp", timestamp);
+			
+			pureUser.setTimeStmap(timestamp);
+			auth.setUserInfoByToken(token, pureUser);
 			JSONArray outdataArray = jsonObject.getJSONArray("data");
 			String outdataStr = JSON.toJSONString(outdataArray);
 			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));
@@ -368,7 +388,8 @@ public class AdContentController implements ApplicationContextAware {
 			for (int i = 0; i < dataArray.size(); i++) {
 				JSONObject o = dataArray.getJSONObject(i);
 				AdContent adContent = JSONObject.toJavaObject(o, AdContent.class);
-				boolean checkEnable = auth.getRolePermission(token, path, "", adContent.getStatus(), Auth.CHECK_ACTION);
+				AdContent adContentInDB = adContentService.findById(adContent.getContent_id());
+				boolean checkEnable = auth.getRolePermission(token, path, adContentInDB.getCreateuser(), adContentInDB.getStatus(), Auth.CHECK_ACTION);
 				if (checkEnable) {
 					adContent.setCheckuser(pureUser.getUsername());
 					adContent.setCheckdt(new Date());
@@ -376,13 +397,16 @@ public class AdContentController implements ApplicationContextAware {
 				}
 			}
 			int passNum = adContentService.checkFailByIds(adContentList);
+			long timestamp = System.currentTimeMillis();
 			Perm userPerm = auth.getUserPermission(token, path);
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
 			jsonObject.put("count", passNum);
 			jsonObject.put("data", new ArrayList());
+			jsonObject.put("timestamp", timestamp);
 			jsonObject.put("perm", userPerm);
-
+			pureUser.setTimeStmap(timestamp);
+			auth.setUserInfoByToken(token, pureUser);
 			JSONArray outdataArray = jsonObject.getJSONArray("data");
 			String outdataStr = JSON.toJSONString(outdataArray);
 			String DataEncrypt = AES.aesEncrypt(outdataStr, AES.complementKey(pureUser.getPassword(), 16));

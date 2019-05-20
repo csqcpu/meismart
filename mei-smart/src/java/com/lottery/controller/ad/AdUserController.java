@@ -173,7 +173,7 @@ public class AdUserController implements ApplicationContextAware {
 			long timestamp = System.currentTimeMillis();
 			jsonObject.put("code", 0);
 			jsonObject.put("msg", "成功");
-			jsonObject.put("count", 0);
+			jsonObject.put("count", updateCount);
 			jsonObject.put("timestamp", timestamp);
 			//jsonObject.put("data", new ArrayList());
 			pureUser.setTimeStmap(timestamp);
@@ -214,7 +214,7 @@ public class AdUserController implements ApplicationContextAware {
 				paramMap.put("contact", adUser.getContact());
 			// 用户权限
 			if (permStr != null && permStr.equals("self"))
-				paramMap.put("perm", adUser.getUsername());
+				paramMap.put("perm", pureUser.getUsername());
 			List<AdUser> adUserList = adUserService.findByParam(paramMap);
 			List<AdUser> pageAdUserLits = new ArrayList<AdUser>();
 			for (int i = (page - 1) * limit; i < adUserList.size() && i < page * limit; i++) {
